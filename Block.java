@@ -5,8 +5,8 @@ public abstract class Block {
 
     Block() {
         startTime = LocalDateTime.now();
-        //System.out.println(startTime);
-        // merge 31
+        System.out.println(startTime);
+
 
     }
     void end(){
