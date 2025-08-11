@@ -5,13 +5,17 @@ public class Day {
     StudyBlock[] blocks;
 
     Day() {
-        StudyBlock[] blocks = new StudyBlock[40];
+        blocks = new StudyBlock[40];
 
     }
 
-    void increaseCapacity(){ // For the case if a day have more than 40 block -> we know that
-        StudyBlock[] temp = new StudyBlock[blocks.length+20];
-
-
+    void increaseCapacity(StudyBlock[] blocks) {// For the case if a day have more than 40 block
+        StudyBlock[] temp = new StudyBlock[blocks.length + 20];
+        for (int i = 0; i < blocks.length; i++) {
+            temp[i] = blocks[i];
+        }
+        blocks = temp; // This only changes the local 'blocks' variable
     }
+
+
 }
