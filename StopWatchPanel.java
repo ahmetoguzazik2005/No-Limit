@@ -1,81 +1,71 @@
+import javax.swing.*;
+import java.awt.*;
 
-// not tested in the actual frame next time it will be
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-// will be displayed for stopwatch
 public class StopWatchPanel extends JPanel {
-    int seconds;
-    int minutes;
-    int hours;
-    Timer timer;
-    JLabel timeLabel;
+    private int seconds = 0, minutes = 0, hours = 0;
+    private final Timer timer;
+    private final JLabel timeLabel;
+    private final JButton startButton;
 
-    JButton startButton = new JButton("Start");
+    public StopWatchPanel() {
+        setLayout(new BorderLayout());
 
-    StopWatchPanel() {
-        seconds = 0;
-        minutes = 0;
-        hours = 0;
+        // Create the label for the time
+        timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
+        timeLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        add(timeLabel, BorderLayout.CENTER);
 
-        // will update second every 1000 ms
+        // Create the start/stop button
+        startButton = new JButton("START");
+        startButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
+        startButton.setFocusPainted(false);
+        startButton.setMargin(new Insets(10, 12, 10, 12));
+        add(startButton, BorderLayout.SOUTH);
+
+        // Timer — fires every 1000 ms (1 second)
         timer = new Timer(1000, e -> {
             seconds++;
-        });
-
-        timeLabel = new JLabel("00:00:00");
-        timeLabel.setFont(new Font("Arial", Font.BOLD, 48));
-        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // visual part of buton
-        startButton.setFocusPainted(false);
-        startButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
-        startButton.setMargin(new Insets(10, 12, 10, 12)); // internal padding
-
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer.isRunning()) {
-                    timer.stop();
-                    startButton.setText("START");
-                    startButton.setBackground(Color.green);
-                } else {
-                    timer.start();
-                    startButton.setText("STOP");
-                    startButton.setBackground(Color.red);
-                }
-            }
-        });
-        this.add(startButton);
-        count();
-    }
-
-    public void count() {
-        while (this.isVisible()) {
             if (seconds == 60) {
-                minutes++;
                 seconds = 0;
+                minutes++;
             }
             if (minutes == 60) {
-                hours++;
                 minutes = 0;
+                hours++;
             }
             updateTimeLabel();
-        }
+        });
+
+        // Button click toggles the timer
+        startButton.addActionListener(e -> {
+            if (timer.isRunning()) {
+                timer.stop();
+                startButton.setText("START");
+                startButton.setBackground(Color.GREEN);
+            } else {
+                timer.start();
+                startButton.setText("STOP");
+                startButton.setBackground(Color.RED);
+            }
+            startButton.setOpaque(true);
+            startButton.setContentAreaFilled(true);
+        });
     }
 
-    // formats time label eversecond
+    // Format the time as HH:MM:SS
     private void updateTimeLabel() {
-        String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        timeLabel.setText(formattedTime);
+        timeLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+    }
+
+    // Quick demo frame -> instead for junk main-> deleted junk main !!!
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Stopwatch");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.add(new StopWatchPanel());
+            frame.setSize(400, 250);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }

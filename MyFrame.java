@@ -39,11 +39,7 @@ public class MyFrame extends JFrame {
         right.setBackground(new Color(245, 245, 220)); // beige
         add(right, BorderLayout.CENTER);
 
-        // Bottom panel (status/actions)
-        JPanel bottom = new JPanel();
-        bottom.setBackground(new Color(152, 251, 152)); // pale green
-        bottom.setPreferredSize(new Dimension(0, 100));
-        add(bottom, BorderLayout.SOUTH);
+
 
         setVisible(true);
     }
