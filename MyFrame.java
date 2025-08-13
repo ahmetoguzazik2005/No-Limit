@@ -1,8 +1,18 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class MyFrame extends JFrame {
+public class MyFrame extends JFrame implements ActionListener {
+    // For global scope inside class
+    JButton button1;
+    JButton button2;
+    JButton button3;
+    JButton button4;
+    CardLayout cardLayout;
+    JPanel right;
+
     MyFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -15,29 +25,50 @@ public class MyFrame extends JFrame {
         left.setPreferredSize(new Dimension(220, 0));
 
         left.setLayout(new GridLayout(0, 1, 0, 10)); // 0 rows means
-        // -> autocalculated based of the amount of conponents
+        // -> autocalculated based of the amount of components
 
         // Padding around the buttons
         left.setBorder(new EmptyBorder(16, 12, 16, 12));
         add(left, BorderLayout.WEST);
 
-        JButton button1 = createSidebarButton("Stopwatch");
+        button1 = createSidebarButton("Stopwatch");
         left.add(button1);
 
-        JButton button2 = createSidebarButton("Today");
+        button2 = createSidebarButton("Today");
         left.add(button2);
 
-        JButton button3 = createSidebarButton("Track");
+        button3 = createSidebarButton("Track");
         left.add(button3);
 
-        JButton button4 = createSidebarButton("Settings");
+        button4 = createSidebarButton("Settings");
         left.add(button4);
+
+        button1.addActionListener(this);
+        button2.addActionListener(this);
+        button3.addActionListener(this);
+        button4.addActionListener(this);
 
 
         // Right panel (main content)
-        JPanel right = new JPanel();
+        right = new JPanel();
         right.setBackground(new Color(245, 245, 220)); // beige
         add(right, BorderLayout.CENTER);
+
+        cardLayout = new CardLayout();
+        right.setLayout(cardLayout);
+
+        // Other sub panels initialization
+        StopWatchPanel stopwatchPanel = new StopWatchPanel();
+        TodayPanel todayPanel = new TodayPanel();
+        TrackPanel trackPanel = new TrackPanel();
+        SettingsPanel settingsPanel = new SettingsPanel();
+
+        right.add(stopwatchPanel, "StopwatchPanel");
+        right.add(todayPanel, "TodayPanel");
+        right.add(trackPanel, "TrackPanel");
+        right.add(settingsPanel, "SettingsPanel");
+
+
 
 
 
@@ -54,4 +85,21 @@ public class MyFrame extends JFrame {
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == button1) {
+            cardLayout.show(right, "StopwatchPanel");
+
+        }else if(e.getSource() == button2) {
+            cardLayout.show(right, "TodayPanel");
+
+        }else if(e.getSource() == button3) {
+            cardLayout.show(right, "TrackPanel");
+
+        }else if(e.getSource() == button4) {
+            cardLayout.show(right, "SettingsPanel");
+
+        }
+
+    }
 }
