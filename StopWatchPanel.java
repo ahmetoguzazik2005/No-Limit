@@ -15,6 +15,7 @@ public class StopWatchPanel extends JPanel {
         timeLabel.setFont(new Font("Arial", Font.BOLD, 48));
         add(timeLabel, BorderLayout.CENTER);
 
+
         // Create the start/stop button
         startButton = new JButton("START");
         startButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));

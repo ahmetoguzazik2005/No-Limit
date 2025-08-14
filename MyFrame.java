@@ -68,6 +68,7 @@ public class MyFrame extends JFrame implements ActionListener {
         right.add(trackPanel, "TrackPanel");
         right.add(settingsPanel, "SettingsPanel");
 
+        cardLayout.show(right, "StopwatchPanel");
 
 
 
