@@ -6,22 +6,44 @@ public class StopWatchPanel extends JPanel {
     private final Timer timer;
     private final JLabel timeLabel;
     private final JButton startButton;
+    private final JButton endButton;// makes the clock time zero and also should create or at least make the
+                                    // timeobject finish and save to the db
+    private final JPanel bottomPanel;// for putting buttons together
 
     public StopWatchPanel() {
+        setBackground(new Color(245, 245, 220)); // setting nicer backgrounds
+
         setLayout(new BorderLayout());
+        bottomPanel = new JPanel();
+        bottomPanel.setBackground(new Color(245, 245, 220)); // Beige
+        add(bottomPanel, BorderLayout.SOUTH);
 
         // Create the label for the time
-        timeLabel = new JLabel("00:00:00", SwingConstants.CENTER);
+        timeLabel = new JLabel("00:00", SwingConstants.CENTER);
         timeLabel.setFont(new Font("Arial", Font.BOLD, 48));
         add(timeLabel, BorderLayout.CENTER);
-
 
         // Create the start/stop button
         startButton = new JButton("START");
         startButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
         startButton.setFocusPainted(false);
         startButton.setMargin(new Insets(10, 12, 10, 12));
-        add(startButton, BorderLayout.SOUTH);
+        // first part should also be green
+        startButton.setBackground(Color.GREEN);
+        startButton.setOpaque(true);
+        startButton.setContentAreaFilled(true);
+        startButton.setBorderPainted(false);
+        bottomPanel.add(startButton);
+
+        endButton = new JButton("FINISH");
+        endButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
+        endButton.setFocusPainted(false);
+        endButton.setMargin(new Insets(10, 12, 10, 12));
+        endButton.setBackground(Color.RED);
+        endButton.setOpaque(true);
+        endButton.setContentAreaFilled(true);
+        endButton.setBorderPainted(false);
+        bottomPanel.add(endButton);
 
         // Timer — fires every 1000 ms (1 second)
         timer = new Timer(1000, e -> {
@@ -40,22 +62,52 @@ public class StopWatchPanel extends JPanel {
         // Button click toggles the timer
         startButton.addActionListener(e -> {
             if (timer.isRunning()) {
+                // Stop the timer
                 timer.stop();
                 startButton.setText("START");
+
+                // better visuals
                 startButton.setBackground(Color.GREEN);
+                startButton.setOpaque(true);
+                startButton.setContentAreaFilled(true);
+                startButton.setBorderPainted(false);
+
             } else {
+                // Start the timer
                 timer.start();
-                startButton.setText("STOP");
-                startButton.setBackground(Color.RED);
+                startButton.setText(" STOP ");// for making button size same for all
+
+                // better visuals
+                startButton.setBackground(Color.ORANGE);
+                startButton.setOpaque(true);
+                startButton.setContentAreaFilled(true);
+                startButton.setBorderPainted(false);
             }
-            startButton.setOpaque(true);
-            startButton.setContentAreaFilled(true);
         });
+
+        // Button click toggles the timer
+        endButton.addActionListener(e -> {
+            // should also handle db records
+            timer.stop();
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            updateTimeLabel();
+
+            // if time is zero it should not create new records
+        });
+
     }
 
     // Format the time as HH:MM:SS
     private void updateTimeLabel() {
-        timeLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+        // for better visual
+        if (hours == 0) {
+            timeLabel.setText(String.format("%02d:%02d", minutes, seconds));
+        } else {
+            timeLabel.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+        }
+
     }
 
     // Quick demo frame -> instead for junk main-> deleted junk main !!!
