@@ -33,7 +33,7 @@ public class MyJDBC{
     }
 
     void addStudyBlock(String start_time, String finish_time) throws SQLException{
-        statement.execute("INSERT INTO studyBlocks")
+        statement.execute("INSERT INTO studyBlocks");
 
     }
 }
