@@ -1,21 +1,19 @@
 import javax.swing.*;
 import java.sql.SQLException;
 
-
 public class Main {
-
 
     public static void main(String[] args) throws RuntimeException {
         SwingUtilities.invokeLater(() -> {
+            // commented because gives me error
+            // MyJDBC m;
+            // try {
+            // m = new MyJDBC();
+            // m.createTable();
 
-            MyJDBC m;
-            try {
-                m = new MyJDBC();
-                m.createTable();
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            // } catch (SQLException e) {
+            // throw new RuntimeException(e);
+            // }
 
             MyFrame myFrame = new MyFrame();
             myFrame.setTitle("No Limit"); // Konusuruz ismi
@@ -24,11 +22,6 @@ public class Main {
             JPanel panel = new JPanel();
             myFrame.add(panel);
 
-
-
         });
-
     }
-
-
 }
