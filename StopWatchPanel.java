@@ -20,7 +20,7 @@ public class StopWatchPanel extends JPanel {
 
         // Create the label for the time
         timeLabel = new JLabel("00:00", SwingConstants.CENTER);
-        timeLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        timeLabel.setFont(new Font("Arial", Font.BOLD, 80));
         add(timeLabel, BorderLayout.CENTER);
 
         // Create the start/stop button
@@ -33,16 +33,18 @@ public class StopWatchPanel extends JPanel {
         startButton.setOpaque(true);
         startButton.setContentAreaFilled(true);
         startButton.setBorderPainted(false);
+        startButton.setPreferredSize(new Dimension(180, 60));
         bottomPanel.add(startButton);
 
         endButton = new JButton("FINISH");
         endButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
         endButton.setFocusPainted(false);
         endButton.setMargin(new Insets(10, 12, 10, 12));
-        endButton.setBackground(Color.RED);
+        endButton.setBackground(new Color(220, 53, 69));// red
         endButton.setOpaque(true);
         endButton.setContentAreaFilled(true);
         endButton.setBorderPainted(false);
+        endButton.setPreferredSize(new Dimension(180, 60));
         bottomPanel.add(endButton);
 
         // Timer — fires every 1000 ms (1 second)
@@ -67,7 +69,7 @@ public class StopWatchPanel extends JPanel {
                 startButton.setText("START");
 
                 // better visuals
-                startButton.setBackground(Color.GREEN);
+                startButton.setBackground(new Color(40, 167, 69));
                 startButton.setOpaque(true);
                 startButton.setContentAreaFilled(true);
                 startButton.setBorderPainted(false);
@@ -93,7 +95,6 @@ public class StopWatchPanel extends JPanel {
             minutes = 0;
             hours = 0;
             updateTimeLabel();
-
             // if time is zero it should not create new records
         });
 

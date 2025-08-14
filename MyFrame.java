@@ -48,7 +48,6 @@ public class MyFrame extends JFrame implements ActionListener {
         button3.addActionListener(this);
         button4.addActionListener(this);
 
-
         // Right panel (main content)
         right = new JPanel();
         right.setBackground(new Color(245, 245, 220)); // beige
@@ -70,9 +69,6 @@ public class MyFrame extends JFrame implements ActionListener {
 
         cardLayout.show(right, "StopwatchPanel");
 
-
-
-
         setVisible(true);
     }
 
@@ -85,19 +81,18 @@ public class MyFrame extends JFrame implements ActionListener {
         return btn;
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == button1) {
+        if (e.getSource() == button1) {
             cardLayout.show(right, "StopwatchPanel");
 
-        }else if(e.getSource() == button2) {
+        } else if (e.getSource() == button2) {
             cardLayout.show(right, "TodayPanel");
 
-        }else if(e.getSource() == button3) {
+        } else if (e.getSource() == button3) {
             cardLayout.show(right, "TrackPanel");
 
-        }else if(e.getSource() == button4) {
+        } else if (e.getSource() == button4) {
             cardLayout.show(right, "SettingsPanel");
 
         }
