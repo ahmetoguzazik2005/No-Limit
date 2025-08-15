@@ -3,6 +3,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class MyFrame extends JFrame implements ActionListener {
     // For global scope inside class
@@ -17,29 +19,31 @@ public class MyFrame extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
 
-        // Left panel (sidebar)
+        // Change to GridBagLayout
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // Left panel (sidebar) - 2 parts
         JPanel left = new JPanel();
         left.setBackground(new Color(173, 216, 230)); // soft blue
-        left.setPreferredSize(new Dimension(220, 0));
-
-        left.setLayout(new GridLayout(0, 1, 0, 10)); // 0 rows means
-        // -> autocalculated based of the amount of components
-
-        // Padding around the buttons
+        left.setLayout(new GridLayout(0, 1, 0, 10));
         left.setBorder(new EmptyBorder(16, 12, 16, 12));
-        add(left, BorderLayout.WEST);
+
+        // GridBag constraints for left panel
+        gbc.gridx = 0; // First column
+        gbc.gridy = 0; // First row
+        gbc.weightx = 2.0; // 2 parts of horizontal space
+        gbc.weighty = 1.0; // Full vertical space
+        gbc.fill = GridBagConstraints.BOTH; // Fill both directions
+        add(left, gbc);
 
         button1 = createSidebarButton("Stopwatch");
         left.add(button1);
-
         button2 = createSidebarButton("Today");
         left.add(button2);
-
         button3 = createSidebarButton("Track");
         left.add(button3);
-
         button4 = createSidebarButton("Settings");
         left.add(button4);
 
@@ -48,13 +52,19 @@ public class MyFrame extends JFrame implements ActionListener {
         button3.addActionListener(this);
         button4.addActionListener(this);
 
-        // Right panel (main content)
+        // Right panel (main content) - 3 parts
         right = new JPanel();
         right.setBackground(new Color(245, 245, 220)); // beige
-        add(right, BorderLayout.CENTER);
-
         cardLayout = new CardLayout();
         right.setLayout(cardLayout);
+
+        // GridBag constraints for right panel
+        gbc.gridx = 1; // Second column
+        gbc.gridy = 0; // First row
+        gbc.weightx = 3.0; // 3 parts of horizontal space
+        gbc.weighty = 1.0; // Full vertical space
+        gbc.fill = GridBagConstraints.BOTH; // Fill both directions
+        add(right, gbc);
 
         // Other sub panels initialization
         StopWatchPanel stopwatchPanel = new StopWatchPanel();
@@ -68,7 +78,6 @@ public class MyFrame extends JFrame implements ActionListener {
         right.add(settingsPanel, "SettingsPanel");
 
         cardLayout.show(right, "StopwatchPanel");
-
         setVisible(true);
     }
 

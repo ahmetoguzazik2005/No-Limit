@@ -97,7 +97,6 @@ public class StopWatchPanel extends JPanel {
             updateTimeLabel();
             // if time is zero it should not create new records
         });
-
     }
 
     // Format the time as HH:MM:SS
