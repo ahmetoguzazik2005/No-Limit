@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+
 
 public class MyFrame extends JFrame implements ActionListener {
     // For global scope inside class
@@ -15,9 +19,10 @@ public class MyFrame extends JFrame implements ActionListener {
     CardLayout cardLayout;
     JPanel right;
 
+
     MyFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
 
         // Change to GridBagLayout
@@ -26,6 +31,7 @@ public class MyFrame extends JFrame implements ActionListener {
 
         // Left panel (sidebar) - 2 parts
         JPanel left = new JPanel();
+        left.setPreferredSize(new Dimension(200, 0));
         left.setBackground(new Color(173, 216, 230)); // soft blue
         left.setLayout(new GridLayout(0, 1, 0, 10));
         left.setBorder(new EmptyBorder(16, 12, 16, 12));
@@ -33,7 +39,7 @@ public class MyFrame extends JFrame implements ActionListener {
         // GridBag constraints for left panel
         gbc.gridx = 0; // First column
         gbc.gridy = 0; // First row
-        gbc.weightx = 2.0; // 2 parts of horizontal space
+        gbc.weightx = 1.0; // 4 parts of horizontal space
         gbc.weighty = 1.0; // Full vertical space
         gbc.fill = GridBagConstraints.BOTH; // Fill both directions
         add(left, gbc);
@@ -54,14 +60,13 @@ public class MyFrame extends JFrame implements ActionListener {
 
         // Right panel (main content) - 3 parts
         right = new JPanel();
-        right.setBackground(new Color(245, 245, 220)); // beige
         cardLayout = new CardLayout();
         right.setLayout(cardLayout);
 
         // GridBag constraints for right panel
         gbc.gridx = 1; // Second column
         gbc.gridy = 0; // First row
-        gbc.weightx = 3.0; // 3 parts of horizontal space
+        gbc.weightx = 4.0; // 1 part of horizontal space
         gbc.weighty = 1.0; // Full vertical space
         gbc.fill = GridBagConstraints.BOTH; // Fill both directions
         add(right, gbc);
@@ -82,11 +87,12 @@ public class MyFrame extends JFrame implements ActionListener {
     }
 
     private JButton createSidebarButton(String text) {
-        JButton btn = new JButton(text);
+        JButton btn = new AnimatedPressButton(text);
         btn.setFocusPainted(false);
-        btn.setFont(btn.getFont().deriveFont(Font.PLAIN, 24f));
+        btn.setFont(btn.getFont().deriveFont(Font.PLAIN, 32f));
         btn.setMargin(new Insets(10, 12, 10, 12)); // internal padding
-        btn.setHorizontalAlignment(SwingConstants.LEFT); // align labels nicely
+        btn.setHorizontalAlignment(SwingConstants.CENTER); // align labels nicely
+
         return btn;
     }
 
