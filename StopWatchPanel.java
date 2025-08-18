@@ -13,7 +13,6 @@ public class StopWatchPanel extends JPanel {
 
     public StudyBlock currentBlock;
 
-
     public StopWatchPanel() {
         setBackground(new Color(245, 245, 220)); // setting nicer backgrounds
 
@@ -28,7 +27,7 @@ public class StopWatchPanel extends JPanel {
         add(timeLabel, BorderLayout.CENTER);
 
         // Create the start/stop button
-        //startButton = new JButton("START");
+        // startButton = new JButton("START");
         startButton = new AnimatedPressButton("START");
 
         startButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
@@ -42,7 +41,7 @@ public class StopWatchPanel extends JPanel {
         startButton.setPreferredSize(new Dimension(180, 60));
         bottomPanel.add(startButton);
 
-        endButton   = new AnimatedPressButton("FINISH");
+        endButton = new AnimatedPressButton("FINISH");
         endButton.setFont(startButton.getFont().deriveFont(Font.PLAIN, 24f));
         endButton.setFocusPainted(false);
         endButton.setMargin(new Insets(10, 12, 10, 12));
@@ -73,7 +72,7 @@ public class StopWatchPanel extends JPanel {
                 // Stop the timer
                 currentBlock.end();
                 try {
-                    Main.m.addStudyBlock(currentBlock.startTime,currentBlock.endTime);
+                    Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -104,11 +103,11 @@ public class StopWatchPanel extends JPanel {
 
         // Button click toggles the timer
         endButton.addActionListener(e -> {
-            if (timer.isRunning() ) {
+            if (timer.isRunning()) {
                 // should also handle db records
                 currentBlock.end();
                 try {
-                    Main.m.addStudyBlock(currentBlock.startTime,currentBlock.endTime);
+                    Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -125,7 +124,7 @@ public class StopWatchPanel extends JPanel {
                 hours = 0;
                 updateTimeLabel();
                 // if time is zero it should not create new records
-            }else{ // when pressed finish after stop
+            } else { // when pressed finish after stop
                 timer.stop();
                 seconds = 0;
                 minutes = 0;
@@ -147,6 +146,5 @@ public class StopWatchPanel extends JPanel {
         }
 
     }
-
 
 }
