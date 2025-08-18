@@ -7,13 +7,13 @@ public class Main {
     public static void main(String[] args) throws RuntimeException {
         SwingUtilities.invokeLater(() -> {
 
-             try {
+            try {
                 m = new MyJDBC();
-                 m.createTable();
+                m.createTable();
 
-             } catch (SQLException e) {
-                 throw new RuntimeException(e);
-             }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             MyFrame myFrame = new MyFrame();
             myFrame.setTitle("No Limit"); // Konusuruz ismi
