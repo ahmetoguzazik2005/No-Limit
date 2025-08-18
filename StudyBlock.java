@@ -1,5 +1,11 @@
+import java.time.LocalDateTime;
+
 public class StudyBlock extends Block {
-    StudyBlock() {
+    StudyBlock(LocalDateTime start) {
+        super(start);
+    }
+
+    StudyBlock(){
         super();
     }
 }

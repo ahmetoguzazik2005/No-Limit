@@ -9,7 +9,8 @@ public class Main {
 
              try {
                 m = new MyJDBC();
-                 m.createTable();
+                 m.createStudyBlocksTable();
+                 m.createDaysTable();
 
              } catch (SQLException e) {
                  throw new RuntimeException(e);

@@ -1,21 +1,34 @@
+import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Day {
     LocalDate whichDay;
-    StudyBlock[] blocks;
+    int hours;
+    int minutes;
+    int seconds;
+    ArrayList<StudyBlock> blocks = new ArrayList<>();
 
-    Day() {
-        blocks = new StudyBlock[40];
 
+    Day(LocalDate whichDay) throws SQLException {
+        this.whichDay = whichDay;
+        blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
+        calculateTotalHours();
     }
 
-    void increaseCapacity() {// For the case if a day have more than 40 block
-        StudyBlock[] temp = new StudyBlock[blocks.length + 20];
-        for (int i = 0; i < blocks.length; i++) {
-            temp[i] = blocks[i];
+    public void calculateTotalHours(){
+        Duration duration;
+        for(StudyBlock block : blocks){
+            duration = Duration.between(block.startTime, block.endTime);
+            hours += (int) duration.toHours();
+            minutes += ((int) duration.toMinutes()) % 60;
+            seconds += ((int) duration.toSeconds()) % 60;
         }
-        blocks = temp; // This only changes the local 'blocks' variable
+
     }
+
+
 
 
 }

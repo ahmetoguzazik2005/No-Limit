@@ -2,7 +2,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
 
 
 public class MyJDBC{
@@ -15,10 +15,8 @@ public class MyJDBC{
         connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "password");
         statement = connection.createStatement();
     }
-    void createTable() throws SQLException{
-        if (isThereTable()){
-            return;
-        }
+    void createStudyBlocksTable() throws SQLException{
+
         String sql =
                 "CREATE TABLE IF NOT EXISTS StudyBlocks (" +
                         "  start_time DATETIME NOT NULL," +
@@ -27,17 +25,18 @@ public class MyJDBC{
 
         statement.executeUpdate(sql); // will be 0 for DDL like CREATE TABLE
     }
+    void createDaysTable() throws SQLException{
+        String sql =
+                "CREATE TABLE IF NOT EXISTS Days (" +
+                        "  day_date DATE PRIMARY KEY," +
+                        "  hours INT NOT NULL DEFAULT 0," +
+                        "  minutes INT NOT NULL DEFAULT 0," +
+                        "  seconds INT NOT NULL DEFAULT 0" +
+                        ")";
 
-    boolean isThereTable() throws SQLException{
-        DatabaseMetaData meta = connection.getMetaData();
-        try (ResultSet rs = meta.getTables(null, null, "studyBlocks", null)) {
-            if (rs.next()) { // There is already a table
-                return true;
-            } else {
-                return false; // no table yet
-            }
-        }
+        statement.executeUpdate(sql);
     }
+
 
     public void addStudyBlock(LocalDateTime start, LocalDateTime end) throws SQLException {
         Timestamp startTs = Timestamp.valueOf(start);
@@ -49,19 +48,36 @@ public class MyJDBC{
 
         statement.executeUpdate(sql);
     }
+    void addToDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
+        // Ensure the row exists (so UPDATE always works)
+        try (Statement st = connection.createStatement()) {
+            st.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day + "')");
+        }
 
-    public void makeAListOfADaysStudyBlocks(LocalDate whichDay) throws SQLException {
+
+        try (Statement st = connection.createStatement()) {
+            st.executeUpdate(
+                    "UPDATE Days SET hours=" + hours + ", minutes=" + minutes + ", seconds=" + seconds +
+                            " WHERE day_date='" + day + "'"
+            );
+        }
+    }
+
+    public ArrayList<StudyBlock> makeAListOfADaysStudyBlocks(LocalDate whichDay) throws SQLException {
         // start of the day
         LocalDateTime startOfDay = whichDay.atStartOfDay();             // yyyy-MM-dd 00:00:00
         // start of the next day
         LocalDateTime endOfDay   = whichDay.plusDays(1).atStartOfDay(); // yyyy-MM-dd+1 00:00:00
 
         // Build SQL string
-        String query = "SELECT * FROM StudyBlocks " +
-                "WHERE start_time >= '" + startOfDay.format(SQL_FORMAT) + "' " +
-                "AND start_time < '" + endOfDay.format(SQL_FORMAT) + "'";
+        String query =
+                "SELECT start_time, finish_time " +
+                        "FROM StudyBlocks " +
+                        "WHERE start_time >= '" + startOfDay.format(SQL_FORMAT) + "' " +
+                        "AND start_time < '" + endOfDay.format(SQL_FORMAT) + "' " +
+                        "ORDER BY start_time ASC, id ASC";
 
-
+        ArrayList<StudyBlock> blocks = new ArrayList<>();
         // Execute
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
@@ -76,7 +92,13 @@ public class MyJDBC{
                 LocalDateTime start = startTs.toLocalDateTime();
                 LocalDateTime end   = endTs.toLocalDateTime();
 
+                StudyBlock temp = new StudyBlock(start);
+                temp.endTime = end;
+                blocks.add(temp);
+
+
             }
+            return blocks;
         }
     }
 
