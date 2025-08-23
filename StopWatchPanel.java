@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDate;
 
 public class StopWatchPanel extends JPanel {
     private int seconds = 0, minutes = 0, hours = 0;
@@ -73,6 +75,18 @@ public class StopWatchPanel extends JPanel {
                 currentBlock.end();
                 try {
                     Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
+
+                    LocalDate date = currentBlock.startTime.toLocalDate();
+                    Duration diff = Duration.between(currentBlock.startTime, currentBlock.endTime);
+
+                    long totalSeconds = diff.getSeconds();
+
+
+                    int hours   = (int) (totalSeconds / 3600);
+                    int minutes = (int) ((totalSeconds % 3600) / 60);
+                    int seconds = (int) (totalSeconds % 60);
+
+                    Main.m.addToDay(date, hours, minutes, seconds);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -108,6 +122,17 @@ public class StopWatchPanel extends JPanel {
                 currentBlock.end();
                 try {
                     Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
+                    LocalDate date = currentBlock.startTime.toLocalDate();
+                    Duration diff = Duration.between(currentBlock.startTime, currentBlock.endTime);
+
+                    long totalSeconds = diff.getSeconds();
+
+
+                    int hours   = (int) (totalSeconds / 3600);
+                    int minutes = (int) ((totalSeconds % 3600) / 60);
+                    int seconds = (int) (totalSeconds % 60);
+
+                    Main.m.addToDay(date, hours, minutes, seconds);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }

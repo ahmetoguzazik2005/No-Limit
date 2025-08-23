@@ -1,13 +1,16 @@
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
 public class MyJDBC{
-    private static final DateTimeFormatter SQL_FORMAT =
+    private static final DateTimeFormatter SQL_FORMAT = // For local date time
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter SQL_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");// For local date
+
     Connection connection;
     Statement statement;
     ResultSet resultSet;
@@ -29,9 +32,8 @@ public class MyJDBC{
         String sql =
                 "CREATE TABLE IF NOT EXISTS Days (" +
                         "  day_date DATE PRIMARY KEY," +
-                        "  hours INT NOT NULL DEFAULT 0," +
-                        "  minutes INT NOT NULL DEFAULT 0," +
-                        "  seconds INT NOT NULL DEFAULT 0" +
+                        "  total_time TIME NOT NULL DEFAULT '00:00:00'," +
+                        "  goal_time  TIME NOT NULL DEFAULT '00:00:00'" +
                         ")";
 
         statement.executeUpdate(sql);
@@ -49,18 +51,19 @@ public class MyJDBC{
         statement.executeUpdate(sql);
     }
     void addToDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
+        String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         // Ensure the row exists (so UPDATE always works)
-        try (Statement st = connection.createStatement()) {
-            st.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day + "')");
-        }
+        statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create that if
+        // If that day does not exist
 
+        
+        String sql =
+                "UPDATE Days " +
+                        "SET total_time = ADDTIME(total_time, '" + delta + "')" +
+                        "WHERE day_date = '" + day.format(SQL_DATE) + "'";
 
-        try (Statement st = connection.createStatement()) {
-            st.executeUpdate(
-                    "UPDATE Days SET hours=" + hours + ", minutes=" + minutes + ", seconds=" + seconds +
-                            " WHERE day_date='" + day + "'"
-            );
-        }
+        statement.executeUpdate(sql);
+
     }
 
     public ArrayList<StudyBlock> makeAListOfADaysStudyBlocks(LocalDate whichDay) throws SQLException {
@@ -75,12 +78,11 @@ public class MyJDBC{
                         "FROM StudyBlocks " +
                         "WHERE start_time >= '" + startOfDay.format(SQL_FORMAT) + "' " +
                         "AND start_time < '" + endOfDay.format(SQL_FORMAT) + "' " +
-                        "ORDER BY start_time ASC, id ASC";
+                        "ORDER BY start_time ASC, id finish_time ASC";
 
         ArrayList<StudyBlock> blocks = new ArrayList<>();
         // Execute
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+             resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
                 // read columns
@@ -99,7 +101,7 @@ public class MyJDBC{
 
             }
             return blocks;
-        }
+
     }
 
 }
