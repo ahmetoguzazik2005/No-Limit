@@ -59,7 +59,7 @@ public class MyJDBC{
         
         String sql =
                 "UPDATE Days " +
-                        "SET total_time = ADDTIME(total_time, '" + delta + "')" +
+                        "SET total_time = ADDTIME(total_time, '" + delta + "') " +
                         "WHERE day_date = '" + day.format(SQL_DATE) + "'";
 
         statement.executeUpdate(sql);
@@ -102,6 +102,40 @@ public class MyJDBC{
             }
             return blocks;
 
+    }
+    public LocalTime getDayGoal(LocalDate day) throws SQLException {
+        String sql = "SELECT goal_time " +
+                "FROM Days " +
+                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+        resultSet = statement.executeQuery(sql);
+
+        if (resultSet.next()) {
+            java.sql.Time t = resultSet.getTime("goal_time");
+            if (t != null) {
+                return t.toLocalTime();
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+
+    public LocalTime getDayTotalTime(LocalDate day) throws SQLException {
+        String sql = "SELECT total_time " +
+                "FROM Days " +
+                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+        resultSet = statement.executeQuery(sql);
+
+        if (resultSet.next()) {
+            java.sql.Time t = resultSet.getTime("total_time");
+            if (t != null) {
+                return t.toLocalTime();
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 
 }

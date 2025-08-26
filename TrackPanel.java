@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.YearMonth;
 
 import javax.swing.*;
@@ -38,7 +40,7 @@ public class TrackPanel extends JPanel {
             "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
     };
 
-    TrackPanel() {
+    TrackPanel() throws SQLException {
         setBackground(new Color(245, 245, 220)); // setting nicer backgrounds
         today = LocalDate.now();
         setLayout(new BorderLayout());
@@ -67,7 +69,11 @@ public class TrackPanel extends JPanel {
                 year = year - 1;
             }
             dateLabel.setText(String.format("%s %d", MONTHS[monthId - 1], year));
-            updateCalendarDisplay();
+            try {
+                updateCalendarDisplay();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         // increases month by one
@@ -78,7 +84,11 @@ public class TrackPanel extends JPanel {
                 year = year + 1;
             }
             dateLabel.setText(String.format("%s %d", MONTHS[monthId - 1], year));
-            updateCalendarDisplay();
+            try {
+                updateCalendarDisplay();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
@@ -90,7 +100,7 @@ public class TrackPanel extends JPanel {
 
         // will work
         centerDays = new JPanel();
-        add(centerDays);
+        add(centerDays, BorderLayout.CENTER);
         centerDays.setBackground(new Color(245, 245, 220));
 
         setupCalendarGrid();
@@ -142,7 +152,7 @@ public class TrackPanel extends JPanel {
         calendarGridPanel.add(datesPanel, BorderLayout.CENTER);
     }
 
-    private void updateCalendarDisplay() {
+    private void updateCalendarDisplay() throws SQLException {
         // Get the first day of the month and total days
         YearMonth yearMonth = YearMonth.of(year, monthId);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
@@ -177,17 +187,81 @@ public class TrackPanel extends JPanel {
                 if (cellIndex < firstDayOfWeek) {
                     // Previous month's days
                     int prevMonthDay = daysInPreviousMonth - (firstDayOfWeek - cellIndex - 1);
-                    button.setText(String.valueOf(prevMonthDay));
+                    int prevMonth;
+                    int prevYear;
+                    if(monthId == 1) {
+                        prevMonth = 12;
+                        prevYear = year - 1;
+                    }else{
+                        prevMonth = monthId -1;
+                        prevYear = year;
+                    }
+                    LocalDate prevDate = LocalDate.of(prevYear, prevMonth, prevMonthDay);
+                    LocalTime totalTime = Main.m.getDayTotalTime(prevDate);
+                    LocalTime goalTime = Main.m.getDayGoal(prevDate);
+                    if(totalTime == null){
+                        button.setBackground(Color.WHITE);
+                        button.setText(String.valueOf(prevMonthDay));
+                    } else if (goalTime.isAfter(totalTime)) {
+                        button.setBackground(Color.red);
+                        button.setText("Total time: " + totalTime + " " + prevMonthDay + "Goal time: " + goalTime);
+                    }else{
+                        button.setBackground(Color.green);
+                        button.setText(String.valueOf("Total time: " + totalTime + " " + prevMonthDay + "Goal time: " + goalTime));
+                    }
                     button.setForeground(Color.LIGHT_GRAY);
 
                 } else if (currentDay <= daysInMonth) {
                     // Current month's days
-                    button.setText(String.valueOf(currentDay));
+                    LocalDate thisDate = LocalDate.of(year, monthId, currentDay);
+                    LocalTime totalTime = Main.m.getDayTotalTime(thisDate);
+                    LocalTime goalTime = Main.m.getDayGoal(thisDate);
+
+                    if(totalTime == null){
+                        button.setBackground(Color.WHITE);
+                        button.setText(String.valueOf(thisDate.getDayOfMonth()));
+                    } else if (goalTime.isAfter(totalTime)) {
+                        button.setBackground(Color.red);
+                        button.setText("Total time: " + totalTime + thisDate + "Goal time: " + goalTime);
+                    }else{
+                        button.setBackground(Color.green);
+                        button.setText(String.valueOf("Total time: " + totalTime + thisDate + "Goal time: " + goalTime));
+                    }
+
                     button.setForeground(Color.BLACK);
                     currentDay++;
                 } else {
+
+
+                    int nextMonth;
+                    int nextYear;
+
+                    if (monthId == 12) {
+                        nextMonth = 1;
+                        nextYear = year + 1;
+
+                    }else{
+                        nextMonth = monthId + 1;
+                        nextYear = year;
+                    }
+
+
                     // Next month's days
-                    button.setText(String.valueOf(nextMonthDay));
+                    LocalDate nextDate = LocalDate.of(nextYear, nextMonth, nextMonthDay);
+                    LocalTime totalTime = Main.m.getDayTotalTime(nextDate);
+                    LocalTime goalTime = Main.m.getDayGoal(nextDate);
+
+                    if(totalTime == null){
+                        button.setBackground(Color.WHITE);
+                        button.setText(String.valueOf(nextDate.getDayOfMonth()));
+                    } else if (goalTime.isAfter(totalTime)) {
+                        button.setBackground(Color.red);
+                        button.setText("Total time: " + totalTime + nextDate + "Goal time: " + goalTime);
+                    }else{
+                        button.setBackground(Color.green);
+                        button.setText(String.valueOf("Total time: " + totalTime + nextDate + "Goal time: " + goalTime));
+                    }
+
                     button.setForeground(Color.LIGHT_GRAY);
                     nextMonthDay++;
                 }

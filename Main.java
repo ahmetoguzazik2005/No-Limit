@@ -16,7 +16,12 @@ public class Main {
                  throw new RuntimeException(e);
              }
 
-            MyFrame myFrame = new MyFrame();
+            MyFrame myFrame = null;
+            try {
+                myFrame = new MyFrame();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             myFrame.setTitle("No Limit"); // Konusuruz ismi
 
             // Main Panel - will be cont.
