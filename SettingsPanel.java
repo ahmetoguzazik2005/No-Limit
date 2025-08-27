@@ -4,6 +4,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -182,6 +185,12 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
 
             // Fire a property change so other panels can react if needed
             int newTotal = hours * 60 + minutes;
+            LocalTime localTime = LocalTime.of(hours, minutes);
+            try {
+                Main.m.setDailyGoal(LocalDate.now(), localTime);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             firePropertyChange("goalMinutes", -1, newTotal);
 
             statusLabel.setForeground(new Color(25, 135, 84));

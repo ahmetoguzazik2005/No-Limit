@@ -203,11 +203,12 @@ public class TrackPanel extends JPanel {
                         button.setBackground(Color.WHITE);
                         button.setText(String.valueOf(prevMonthDay));
                     } else if (goalTime.isAfter(totalTime)) {
+                        System.out.println("GOAL TIME TOO LONG");
                         button.setBackground(Color.red);
-                        button.setText("Total time: " + totalTime + " " + prevMonthDay + "Goal time: " + goalTime);
+                        button.setText(String.valueOf(prevMonthDay));
                     }else{
                         button.setBackground(Color.green);
-                        button.setText(String.valueOf("Total time: " + totalTime + " " + prevMonthDay + "Goal time: " + goalTime));
+                        button.setText(String.valueOf(prevMonthDay ));
                     }
                     button.setForeground(Color.LIGHT_GRAY);
 
@@ -222,10 +223,10 @@ public class TrackPanel extends JPanel {
                         button.setText(String.valueOf(thisDate.getDayOfMonth()));
                     } else if (goalTime.isAfter(totalTime)) {
                         button.setBackground(Color.red);
-                        button.setText("Total time: " + totalTime + thisDate + "Goal time: " + goalTime);
+                        button.setText(String.valueOf( thisDate.getDayOfMonth()));
                     }else{
                         button.setBackground(Color.green);
-                        button.setText(String.valueOf("Total time: " + totalTime + thisDate + "Goal time: " + goalTime));
+                        button.setText(String.valueOf( thisDate.getDayOfMonth() ));
                     }
 
                     button.setForeground(Color.BLACK);

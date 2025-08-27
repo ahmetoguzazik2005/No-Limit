@@ -56,7 +56,7 @@ public class MyJDBC{
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create that if
         // If that day does not exist
 
-        
+
         String sql =
                 "UPDATE Days " +
                         "SET total_time = ADDTIME(total_time, '" + delta + "') " +
@@ -118,6 +118,14 @@ public class MyJDBC{
             }
         }
         return null;
+    }
+    public void setDailyGoal(LocalDate day, LocalTime time)throws SQLException{
+        Time sqlTime = Time.valueOf(time);
+        String sql = "UPDATE Days " +
+                "SET goal_time = '" + sqlTime + "'"
+                + " WHERE day_date = '" + day.format(SQL_DATE) + "'";
+        statement.executeUpdate(sql);
+
     }
 
 
