@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,7 +13,7 @@ import java.time.YearMonth;
 
 import javax.swing.*;
 
-public class TrackPanel extends JPanel {
+public class TrackPanel extends JPanel implements ActionListener {
     JPanel calendarPanel;
     // will contain center
     JPanel centerDays;
@@ -203,7 +205,6 @@ public class TrackPanel extends JPanel {
                         button.setBackground(Color.WHITE);
                         button.setText(String.valueOf(prevMonthDay));
                     } else if (goalTime.isAfter(totalTime)) {
-                        System.out.println("GOAL TIME TOO LONG");
                         button.setBackground(Color.red);
                         button.setText(String.valueOf(prevMonthDay));
                     }else{
@@ -220,13 +221,13 @@ public class TrackPanel extends JPanel {
 
                     if(totalTime == null){
                         button.setBackground(Color.WHITE);
-                        button.setText(String.valueOf(thisDate.getDayOfMonth()));
+                        button.setText(currentDay + "");
                     } else if (goalTime.isAfter(totalTime)) {
                         button.setBackground(Color.red);
-                        button.setText(String.valueOf( thisDate.getDayOfMonth()));
+                        button.setText(currentDay + "");
                     }else{
                         button.setBackground(Color.green);
-                        button.setText(String.valueOf( thisDate.getDayOfMonth() ));
+                        button.setText(currentDay + "");
                     }
 
                     button.setForeground(Color.BLACK);
@@ -254,17 +255,32 @@ public class TrackPanel extends JPanel {
 
                     if(totalTime == null){
                         button.setBackground(Color.WHITE);
-                        button.setText(String.valueOf(nextDate.getDayOfMonth()));
+                        button.setText(nextMonthDay+"");
                     } else if (goalTime.isAfter(totalTime)) {
                         button.setBackground(Color.red);
-                        button.setText("Total time: " + totalTime + nextDate + "Goal time: " + goalTime);
+                        button.setText(nextMonthDay+"");
                     }else{
                         button.setBackground(Color.green);
-                        button.setText(String.valueOf("Total time: " + totalTime + nextDate + "Goal time: " + goalTime));
+                        button.setText(nextMonthDay+"");
                     }
 
                     button.setForeground(Color.LIGHT_GRAY);
                     nextMonthDay++;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                if (e.getSource() == dayButtons[i][j]) {
+                    String s = dayButtons[i][j].getText();
+                    int day = Integer.parseInt(s);
+
+
+
                 }
             }
         }
