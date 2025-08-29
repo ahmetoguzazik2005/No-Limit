@@ -17,8 +17,9 @@ public class MyFrame extends JFrame implements ActionListener {
     JButton button2;
     JButton button3;
     JButton button4;
-    CardLayout cardLayout;
-    JPanel right;
+    static CardLayout cardLayout;
+    static JPanel right;
+    static ExaminationPanel examinationPanel;
 
 
     MyFrame() throws SQLException {
@@ -77,10 +78,12 @@ public class MyFrame extends JFrame implements ActionListener {
         TodayPanel todayPanel = new TodayPanel();
         TrackPanel trackPanel = new TrackPanel();
         SettingsPanel settingsPanel = new SettingsPanel();
+        examinationPanel = new ExaminationPanel();
 
         right.add(stopwatchPanel, "StopwatchPanel");
         right.add(todayPanel, "TodayPanel");
         right.add(trackPanel, "TrackPanel");
+        right.add(examinationPanel, "ExaminationPanel"); // For the detailed look of the track panel for a day
         right.add(settingsPanel, "SettingsPanel");
 
         cardLayout.show(right, "StopwatchPanel");

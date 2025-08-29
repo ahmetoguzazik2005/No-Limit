@@ -31,7 +31,7 @@ public class TrackPanel extends JPanel implements ActionListener {
     JPanel calendarGridPanel;
     JPanel dayHeadersPanel;
     JPanel datesPanel;
-    JButton[][] dayButtons; // 6 weeks x 7 days
+    ButtonWithADate[][] dayButtons; // 6 weeks x 7 days
 
     public static final String[] MONTHS = {
             "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
@@ -141,11 +141,11 @@ public class TrackPanel extends JPanel implements ActionListener {
         // Dates grid (6 weeks x 7 days = 42 buttons)
         datesPanel = new JPanel(new GridLayout(6, 7, 1, 1));
         datesPanel.setBackground(Color.WHITE);
-        dayButtons = new JButton[6][7];
+        dayButtons = new ButtonWithADate[6][7];
 
         for (int week = 0; week < 6; week++) {
             for (int day = 0; day < 7; day++) {
-                JButton dayButton = new AnimatedPressButton("");
+                ButtonWithADate dayButton = new ButtonWithADate("");
                 dayButtons[week][day] = dayButton;
                 datesPanel.add(dayButton);
             }
@@ -170,10 +170,10 @@ public class TrackPanel extends JPanel implements ActionListener {
         // Clear all buttons first
         for (int week = 0; week < 6; week++) {
             for (int day = 0; day < 7; day++) {
-                dayButtons[week][day].setText("");
                 dayButtons[week][day].setBackground(Color.WHITE);
                 dayButtons[week][day].setForeground(Color.BLACK);
                 dayButtons[week][day].setEnabled(true);
+                dayButtons[week][day].addActionListener(this);
             }
         }
 
@@ -183,7 +183,7 @@ public class TrackPanel extends JPanel implements ActionListener {
 
         for (int week = 0; week < 6; week++) {
             for (int day = 0; day < 7; day++) {
-                JButton button = dayButtons[week][day];
+                ButtonWithADate button = dayButtons[week][day];
                 int cellIndex = week * 7 + day + 1;
 
                 if (cellIndex < firstDayOfWeek) {
@@ -201,6 +201,7 @@ public class TrackPanel extends JPanel implements ActionListener {
                     LocalDate prevDate = LocalDate.of(prevYear, prevMonth, prevMonthDay);
                     LocalTime totalTime = Main.m.getDayTotalTime(prevDate);
                     LocalTime goalTime = Main.m.getDayGoal(prevDate);
+                    button.date = prevDate;
                     if(totalTime == null){
                         button.setBackground(Color.WHITE);
                         button.setText(String.valueOf(prevMonthDay));
@@ -218,6 +219,7 @@ public class TrackPanel extends JPanel implements ActionListener {
                     LocalDate thisDate = LocalDate.of(year, monthId, currentDay);
                     LocalTime totalTime = Main.m.getDayTotalTime(thisDate);
                     LocalTime goalTime = Main.m.getDayGoal(thisDate);
+                    button.date = thisDate;
 
                     if(totalTime == null){
                         button.setBackground(Color.WHITE);
@@ -252,6 +254,7 @@ public class TrackPanel extends JPanel implements ActionListener {
                     LocalDate nextDate = LocalDate.of(nextYear, nextMonth, nextMonthDay);
                     LocalTime totalTime = Main.m.getDayTotalTime(nextDate);
                     LocalTime goalTime = Main.m.getDayGoal(nextDate);
+                    button.date = nextDate;
 
                     if(totalTime == null){
                         button.setBackground(Color.WHITE);
@@ -273,16 +276,17 @@ public class TrackPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 7; j++) {
-                if (e.getSource() == dayButtons[i][j]) {
-                    String s = dayButtons[i][j].getText();
-                    int day = Integer.parseInt(s);
-
-
-
-                }
+        Object src = e.getSource();
+        if (src instanceof ButtonWithADate) {
+            ButtonWithADate b = (ButtonWithADate) src;
+            LocalDate date = b.date;  // <-- use the actual date
+            try {
+                MyFrame.examinationPanel.set(date);
+                MyFrame.cardLayout.show(MyFrame.right,"ExaminationPanel");
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
+
         }
     }
 }
