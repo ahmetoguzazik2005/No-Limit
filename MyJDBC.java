@@ -76,7 +76,7 @@ public class MyJDBC {
                 "FROM StudyBlocks " +
                 "WHERE start_time >= '" + startOfDay.format(SQL_FORMAT) + "' " +
                 "AND start_time < '" + endOfDay.format(SQL_FORMAT) + "' " +
-                "ORDER BY start_time ASC, id finish_time ASC";
+                "ORDER BY start_time ASC, finish_time ASC";// id word was causing problem
 
         ArrayList<StudyBlock> blocks = new ArrayList<>();
         // Execute
