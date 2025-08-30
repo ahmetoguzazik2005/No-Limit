@@ -3,44 +3,59 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
-public class ExaminationPanel extends JPanel{ // For the detailed day look
+public class ExaminationPanel extends JPanel { // For the detailed day look
     LocalDate whichDay;
     ArrayList<StudyBlock> blocks;
+    JTable table;
+    DefaultTableModel model;
+    JPanel buttonPanel;
+    AnimatedPressButton deleteBlock;
+    AnimatedPressButton addBlock;
+    JPanel labelPanel;
+    JLabel labelTotalString;
+    JLabel labelTotalInt;
+    JLabel labelGoalString;
+    JLabel labelGoalInt;
 
     ExaminationPanel() throws SQLException {
+        setLayout(new BorderLayout(10, 10));
+        buttonPanel = new JPanel();
+        deleteBlock = new AnimatedPressButton("Delete Block");
+        // addBlock = new AnimatedPressButton("Add Block");
 
+        labelPanel = new JPanel();
+        labelPanel.setLayout(new FlowLayout());
+        labelTotalString = new JLabel("Total Time: ");
+        labelPanel.add(labelTotalString);
+
+        labelTotalInt = new JLabel();
+        labelPanel.add(labelTotalInt);
+
+        labelGoalString = new JLabel("Goal Time: ");
+        labelPanel.add(labelGoalString);
+
+        labelGoalInt = new JLabel();
+        labelPanel.add(labelGoalInt);
+        this.add(labelPanel, BorderLayout.NORTH);
     }
 
     void set(LocalDate whichDay) throws SQLException {
         this.whichDay = whichDay;
         LocalTime totalTime = Main.m.getDayTotalTime(whichDay);
         LocalTime goalTime = Main.m.getDayGoal(whichDay);
-        //blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
-        this.setLayout(new BorderLayout(10,10));
 
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new FlowLayout());
-        JLabel label1 = new JLabel("Total Time: ");
-        labelPanel.add(label1);
-        JLabel label2 = new JLabel(totalTime.toString());
-        labelPanel.add(label2);
-        JLabel label3 = new JLabel("Goal Time: ");
-        labelPanel.add(label3);
-        JLabel label4 = new JLabel(goalTime.toString());
-        labelPanel.add(label4);
-        this.add(labelPanel, BorderLayout.NORTH);
+        // Format both to look exactly same
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTotalTime = totalTime.format(formatter);
+        String formattedGoalTime = goalTime.format(formatter);
 
-        JPanel buttonPanel = new JPanel();
-        AnimatedPressButton deleteBlock = new AnimatedPressButton("Delete Block");
-        AnimatedPressButton addBlock = new AnimatedPressButton("Add Block");
+        labelTotalInt.setText(formattedTotalTime);
+        labelGoalInt.setText(formattedGoalTime);
 
-
-
-
-
-
+        // blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
     }
-
 }
