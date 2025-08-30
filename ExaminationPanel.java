@@ -69,6 +69,33 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         scrollPane = new JScrollPane(table);
 
         add(scrollPane, BorderLayout.CENTER);
+
+        deleteBlock.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+
+            if (selectedRow >= 0) {
+                String startTime = (String) model.getValueAt(selectedRow, 0);
+
+                String[] parts = startTime.split(" ");
+                String datePart = parts[0]; // "2025-08-30"
+                String timePart = parts[1]; // "08:34:00"
+
+                // Parse to LocalDate and LocalTime
+                LocalDate date = LocalDate.parse(datePart);
+                LocalTime time = LocalTime.parse(timePart);
+
+                try {
+                    Main.m.deleteBlock(date, time);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+
+                // Remove from table model
+                model.removeRow(selectedRow);
+            } else { // not sure how to give better feedback if not selected
+                JOptionPane.showMessageDialog(this, "Please select a row to delete.");
+            }
+        });
     }
 
     // makes seperation easier
@@ -95,14 +122,17 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     // shows all buttons for the user
     void populateTable(LocalDate whichDay) throws SQLException {
         blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
-
         model.setRowCount(0);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");// can be changed in the future
+                                                                                         // just to make visual more
+                                                                                         // meaningful
 
         // adding blocks to my table
         for (StudyBlock block : blocks) {
             Object[] rowData = {
-                    block.startTime, // or format it: block.startTime.format(formatter)
-                    block.endTime, // or format it: block.endTime.format(formatter)
+                    block.startTime.format(formatter),
+                    block.endTime.format(formatter)
                     // Add other StudyBlock properties as needed
             };
             model.addRow(rowData);
