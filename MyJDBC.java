@@ -144,4 +144,8 @@ public class MyJDBC {
         return null;
     }
 
+    public void deleteBlock(LocalDate day, LocalTime time) throws SQLException {
+
+    }
+
 }
