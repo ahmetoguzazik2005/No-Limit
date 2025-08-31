@@ -84,14 +84,23 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 LocalDate date = LocalDate.parse(datePart);
                 LocalTime time = LocalTime.parse(timePart);
 
+                // should remove from the database
                 try {
                     Main.m.deleteBlock(date, time);
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
 
-                // Remove from table model
+                // delete should update total time
+                // delete should change day's color
+
+                // Removes from table model
                 model.removeRow(selectedRow);
+                try {
+                    set(whichDay);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             } else { // not sure how to give better feedback if not selected
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.");
             }
