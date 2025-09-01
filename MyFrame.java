@@ -9,19 +9,20 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-
-
 public class MyFrame extends JFrame implements ActionListener {
     // For global scope inside class
     JButton button1;
     JButton button2;
     JButton button3;
     JButton button4;
+    // this panels may need to be called from the outside
+    TrackPanel trackPanel;
+    TodayPanel todayPanel;
+    SettingsPanel settingsPanel;
+    StopWatchPanel stopwatchPanel;
     static CardLayout cardLayout;
     static JPanel right;
     static ExaminationPanel examinationPanel;
-    TrackPanel trackPanel;
-
 
     MyFrame() throws SQLException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,10 +76,10 @@ public class MyFrame extends JFrame implements ActionListener {
         add(right, gbc);
 
         // Other sub panels initialization
-        StopWatchPanel stopwatchPanel = new StopWatchPanel();
-        TodayPanel todayPanel = new TodayPanel();
+        stopwatchPanel = new StopWatchPanel();
+        todayPanel = new TodayPanel();
         trackPanel = new TrackPanel();
-        SettingsPanel settingsPanel = new SettingsPanel();
+        settingsPanel = new SettingsPanel();
         examinationPanel = new ExaminationPanel();
 
         right.add(stopwatchPanel, "StopwatchPanel");
@@ -110,11 +111,6 @@ public class MyFrame extends JFrame implements ActionListener {
             cardLayout.show(right, "TodayPanel");
 
         } else if (e.getSource() == button3) {
-            try {
-                trackPanel.updateCalendarDisplay();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
             cardLayout.show(right, "TrackPanel");
 
         } else if (e.getSource() == button4) {

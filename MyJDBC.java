@@ -53,9 +53,6 @@ public class MyJDBC {
         String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
-                                                                                                               // that
-                                                                                                               // if
-        // If that day does not exist
 
         String sql = "UPDATE Days " +
                 "SET total_time = ADDTIME(total_time, '" + delta + "') " +
@@ -124,7 +121,6 @@ public class MyJDBC {
                 "SET goal_time = '" + sqlTime + "'"
                 + " WHERE day_date = '" + day.format(SQL_DATE) + "'";
         statement.executeUpdate(sql);
-
     }
 
     public LocalTime getDayTotalTime(LocalDate day) throws SQLException {
@@ -142,6 +138,24 @@ public class MyJDBC {
             }
         }
         return null;
+    }
+
+    public void deleteBlock(LocalDate day, LocalTime time) throws SQLException {
+        LocalDateTime combined = LocalDateTime.of(day, time);
+        System.out.println(combined);
+        String sql = "DELETE FROM StudyBlocks WHERE start_time = '"
+                + combined.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "'";
+        statement.executeUpdate(sql);
+    }
+
+    void removeFromTheDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
+        String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        String sql = "UPDATE Days " +
+                "SET total_time = SUBTIME(total_time, '" + delta + "') " +
+                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+
+        statement.executeUpdate(sql);
+
     }
 
 }
