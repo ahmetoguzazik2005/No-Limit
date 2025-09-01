@@ -3,6 +3,7 @@ import java.sql.SQLException;
 
 public class Main {
     static MyJDBC m;
+    static MyFrame myFrame;
 
     public static void main(String[] args) throws RuntimeException {
         SwingUtilities.invokeLater(() -> {
@@ -16,7 +17,7 @@ public class Main {
                 throw new RuntimeException(e);
             }
 
-            MyFrame myFrame = null;
+            myFrame = null;
             try {
                 myFrame = new MyFrame();
             } catch (SQLException e) {

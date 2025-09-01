@@ -121,7 +121,13 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
+
                 // delete should change day's color
+                try {
+                    Main.myFrame.trackPanel.updateCalendarDisplay();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
 
                 // Removes from table model
                 model.removeRow(selectedRow);
