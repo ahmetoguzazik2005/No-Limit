@@ -3,20 +3,21 @@ import java.sql.SQLException;
 
 public class Main {
     static MyJDBC m;
+    static MyFrame myFrame;
 
     public static void main(String[] args) throws RuntimeException {
         SwingUtilities.invokeLater(() -> {
 
-             try {
+            try {
                 m = new MyJDBC();
-                 m.createStudyBlocksTable();
-                 m.createDaysTable();
+                m.createStudyBlocksTable();
+                m.createDaysTable();
 
-             } catch (SQLException e) {
-                 throw new RuntimeException(e);
-             }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
-            MyFrame myFrame = null;
+            myFrame = null;
             try {
                 myFrame = new MyFrame();
             } catch (SQLException e) {
