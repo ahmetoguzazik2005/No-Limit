@@ -20,6 +20,7 @@ public class MyFrame extends JFrame implements ActionListener {
     static CardLayout cardLayout;
     static JPanel right;
     static ExaminationPanel examinationPanel;
+    TrackPanel trackPanel;
 
 
     MyFrame() throws SQLException {
@@ -76,7 +77,7 @@ public class MyFrame extends JFrame implements ActionListener {
         // Other sub panels initialization
         StopWatchPanel stopwatchPanel = new StopWatchPanel();
         TodayPanel todayPanel = new TodayPanel();
-        TrackPanel trackPanel = new TrackPanel();
+        trackPanel = new TrackPanel();
         SettingsPanel settingsPanel = new SettingsPanel();
         examinationPanel = new ExaminationPanel();
 
@@ -109,6 +110,11 @@ public class MyFrame extends JFrame implements ActionListener {
             cardLayout.show(right, "TodayPanel");
 
         } else if (e.getSource() == button3) {
+            try {
+                trackPanel.updateCalendarDisplay();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             cardLayout.show(right, "TrackPanel");
 
         } else if (e.getSource() == button4) {

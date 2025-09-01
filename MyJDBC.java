@@ -15,7 +15,7 @@ public class MyJDBC {
     ResultSet resultSet;
 
     MyJDBC() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "22042005Hid.");
+        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "password");
         statement = connection.createStatement();
     }
 

@@ -154,7 +154,7 @@ public class TrackPanel extends JPanel implements ActionListener {
         calendarGridPanel.add(datesPanel, BorderLayout.CENTER);
     }
 
-    private void updateCalendarDisplay() throws SQLException {
+    public void updateCalendarDisplay() throws SQLException {
         // Get the first day of the month and total days
         YearMonth yearMonth = YearMonth.of(year, monthId);
         LocalDate firstDayOfMonth = yearMonth.atDay(1);
