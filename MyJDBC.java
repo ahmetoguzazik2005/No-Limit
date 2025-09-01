@@ -148,4 +148,14 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
+    void removeFromTheDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
+        String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        String sql = "UPDATE Days " +
+                "SET total_time = SUBTIME(total_time, '" + delta + "') " +
+                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+
+        statement.executeUpdate(sql);
+
+    }
+
 }

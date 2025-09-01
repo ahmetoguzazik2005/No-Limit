@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +31,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     ExaminationPanel() throws SQLException {
         setLayout(new BorderLayout(10, 10));
 
+        // nlayout and components are set
         buttonPanel = new JPanel();
         deleteBlock = new AnimatedPressButton("Delete Block");
         addBlock = new AnimatedPressButton("Add Block");
@@ -74,15 +76,31 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             int selectedRow = table.getSelectedRow();
 
             if (selectedRow >= 0) {
+                // extract time from the column
                 String startTime = (String) model.getValueAt(selectedRow, 0);
+                String endTime = (String) model.getValueAt(selectedRow, 1);
 
-                String[] parts = startTime.split(" ");
-                String datePart = parts[0]; // "2025-08-30"
-                String timePart = parts[1]; // "08:34:00"
+                // seperate time into date and time
+                String[] partsForBeginning = startTime.split(" ");
+                String datePartBeginning = partsForBeginning[0]; // "2025-08-30"
+                String timePartBeginning = partsForBeginning[1]; // "08:34:00"
+                String[] partsForEnd = endTime.split(" ");
+                String timePartEnd = partsForEnd[1];
+
+                // will be used for time subtraction from the day
+                LocalTime lt1 = LocalTime.parse(timePartEnd);
+                LocalTime lt2 = LocalTime.parse(timePartBeginning);
+
+                Duration duration = Duration.between(lt2, lt1);
+                long totalSeconds = duration.getSeconds();
+
+                int hours = (int) (totalSeconds / 3600);
+                int minutes = (int) ((totalSeconds % 3600) / 60);
+                int seconds = (int) (totalSeconds % 60);
 
                 // Parse to LocalDate and LocalTime
-                LocalDate date = LocalDate.parse(datePart);
-                LocalTime time = LocalTime.parse(timePart);
+                LocalDate date = LocalDate.parse(datePartBeginning);
+                LocalTime time = LocalTime.parse(timePartBeginning);
 
                 // should remove from the database
                 try {
@@ -92,6 +110,17 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 }
 
                 // delete should update total time
+                try {
+                    Main.m.removeFromTheDay(date, hours, minutes, seconds);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+                // should update time label in examination panel
+                try {
+                    set(whichDay);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
                 // delete should change day's color
 
                 // Removes from table model
@@ -101,6 +130,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
+
             } else { // not sure how to give better feedback if not selected
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.");
             }
