@@ -1,14 +1,17 @@
 import java.sql.*;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class MyJDBC {
     private static final DateTimeFormatter SQL_FORMAT = // For local date time
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter SQL_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");// For local date
+    private static final DateTimeFormatter SQL_TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     Connection connection;
     Statement statement;
@@ -49,7 +52,7 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
-    void addToDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
+    /*public void addToDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
         String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
@@ -60,6 +63,50 @@ public class MyJDBC {
 
         statement.executeUpdate(sql);
 
+    }*/
+    private void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the errors
+        // Ensure the row exists (so UPDATE always works)
+        statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
+
+        String sql = "UPDATE Days " +
+                "SET total_time = ADDTIME(total_time, '" + Time.valueOf(time) + "') " +
+                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+
+        statement.executeUpdate(sql);
+
+    }
+    public void addToDayImprovedCaller(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) throws SQLException {
+        int days = (int) ChronoUnit.DAYS.between(startDate, endDate);
+        if(days == 0) {
+            System.out.println("Added to day: " + difference(startTime, endTime));
+            addToDay(startDate, difference(startTime, endTime));
+            return;
+        }else{
+            LocalTime endOfTheDay = LocalTime.of(23, 59, 59);
+            LocalTime startOfTheDay = LocalTime.of(0, 0, 0);
+            for(int i = 0; i < days; i++) {
+                if(i == days - 1) {
+                    addToDay(startDate.plusDays(i), difference(startOfTheDay, endTime));
+                }else{
+                    addToDay(startDate.plusDays(i), difference(startTime, endOfTheDay));
+                }
+
+            }
+        }
+
+
+
+
+    }
+
+    public static LocalTime difference(LocalTime start, LocalTime end) {
+        if(start.isBefore(end)) {
+            System.out.println("true");
+        }else{
+            System.out.println("false");
+        }
+        long seconds = ChronoUnit.SECONDS.between(start, end);
+        return LocalTime.ofSecondOfDay(seconds);
     }
 
     public ArrayList<StudyBlock> makeAListOfADaysStudyBlocks(LocalDate whichDay) throws SQLException {
@@ -148,14 +195,15 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
-    void removeFromTheDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
-        String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    void removeFromTheDay(LocalDate day, LocalTime difference) throws SQLException {
+        System.out.println("Removed: " + difference.toString());
         String sql = "UPDATE Days " +
-                "SET total_time = SUBTIME(total_time, '" + delta + "') " +
+                "SET total_time = SUBTIME(total_time, '" + difference.format(SQL_TIME) + "') " +
                 "WHERE day_date = '" + day.format(SQL_DATE) + "'";
 
         statement.executeUpdate(sql);
 
     }
+
 
 }

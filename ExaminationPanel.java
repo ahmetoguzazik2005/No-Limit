@@ -73,34 +73,31 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         add(scrollPane, BorderLayout.CENTER);
 
         deleteBlock.addActionListener(e -> {
-            int selectedRow = table.getSelectedRow();
+            int viewRow = table.getSelectedRow();
 
-            if (selectedRow >= 0) {
+            if (viewRow >= 0) {
                 // extract time from the column
-                String startTime = (String) model.getValueAt(selectedRow, 0);
-                String endTime = (String) model.getValueAt(selectedRow, 1);
+                int modelRow = table.convertRowIndexToModel(viewRow);
 
-                // seperate time into date and time
+                String startTime = (String) model.getValueAt(modelRow, 0);
+                String endTime   = (String) model.getValueAt(modelRow, 1);
+
+                // split "YYYY-MM-DD HH:MM:SS"
                 String[] partsForBeginning = startTime.split(" ");
-                String datePartBeginning = partsForBeginning[0]; // "2025-08-30"
-                String timePartBeginning = partsForBeginning[1]; // "08:34:00"
+                String datePartBeginning = partsForBeginning[0];
+                String timePartBeginning = partsForBeginning[1];
+
                 String[] partsForEnd = endTime.split(" ");
                 String timePartEnd = partsForEnd[1];
 
-                // will be used for time subtraction from the day
-                LocalTime lt1 = LocalTime.parse(timePartEnd);
-                LocalTime lt2 = LocalTime.parse(timePartBeginning);
+                // compute difference (begin → end)
+                LocalTime ltBegin = LocalTime.parse(timePartBeginning);
+                LocalTime ltEnd   = LocalTime.parse(timePartEnd);
+                LocalTime difference = MyJDBC.difference(ltBegin, ltEnd);
 
-                Duration duration = Duration.between(lt2, lt1);
-                long totalSeconds = duration.getSeconds();
-
-                int hours = (int) (totalSeconds / 3600);
-                int minutes = (int) ((totalSeconds % 3600) / 60);
-                int seconds = (int) (totalSeconds % 60);
-
-                // Parse to LocalDate and LocalTime
+                // parse for DB ops
                 LocalDate date = LocalDate.parse(datePartBeginning);
-                LocalTime time = LocalTime.parse(timePartBeginning);
+                LocalTime time = ltBegin;
 
                 // should remove from the database
                 try {
@@ -111,7 +108,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
                 // delete should update total time
                 try {
-                    Main.m.removeFromTheDay(date, hours, minutes, seconds);
+                    Main.m.removeFromTheDay(date, difference);
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -130,7 +127,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 }
 
                 // Removes from table model
-                model.removeRow(selectedRow);
+                model.removeRow(viewRow);
                 try {
                     set(whichDay);
                 } catch (SQLException e1) {

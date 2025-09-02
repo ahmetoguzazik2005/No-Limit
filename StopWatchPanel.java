@@ -76,17 +76,9 @@ public class StopWatchPanel extends JPanel {
                 try {
                     Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
 
-                    LocalDate date = currentBlock.startTime.toLocalDate();
-                    Duration diff = Duration.between(currentBlock.startTime, currentBlock.endTime);
+                    LocalDate startDate = currentBlock.startTime.toLocalDate();
 
-                    long totalSeconds = diff.getSeconds();
-
-
-                    int hours   = (int) (totalSeconds / 3600);
-                    int minutes = (int) ((totalSeconds % 3600) / 60);
-                    int seconds = (int) (totalSeconds % 60);
-
-                    Main.m.addToDay(date, hours, minutes, seconds);
+                    Main.m.addToDayImprovedCaller(startDate, LocalDate.now(), currentBlock.startTime.toLocalTime(), currentBlock.endTime.toLocalTime());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -122,17 +114,9 @@ public class StopWatchPanel extends JPanel {
                 currentBlock.end();
                 try {
                     Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
-                    LocalDate date = currentBlock.startTime.toLocalDate();
-                    Duration diff = Duration.between(currentBlock.startTime, currentBlock.endTime);
+                    LocalDate startDate = currentBlock.startTime.toLocalDate();
 
-                    long totalSeconds = diff.getSeconds();
-
-
-                    int hours   = (int) (totalSeconds / 3600);
-                    int minutes = (int) ((totalSeconds % 3600) / 60);
-                    int seconds = (int) (totalSeconds % 60);
-
-                    Main.m.addToDay(date, hours, minutes, seconds);
+                    Main.m.addToDayImprovedCaller(startDate, LocalDate.now(), currentBlock.startTime.toLocalTime(), currentBlock.endTime.toLocalTime());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
