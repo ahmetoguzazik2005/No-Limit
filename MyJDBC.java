@@ -75,10 +75,12 @@ public class MyJDBC {
         statement.executeUpdate(sql);
 
     }
+
     public void addToDayImprovedCaller(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) throws SQLException {
         int days = (int) ChronoUnit.DAYS.between(startDate, endDate);
         if(days == 0) {
             System.out.println("Added to day: " + difference(startTime, endTime));
+            System.out.println(startTime.getSecond() + " " + endTime.getSecond());
             addToDay(startDate, difference(startTime, endTime));
             return;
         }else{
@@ -94,12 +96,9 @@ public class MyJDBC {
             }
         }
 
-
-
-
     }
 
-    public static LocalTime difference(LocalTime start, LocalTime end) {
+   /* public static LocalTime difference(LocalTime start, LocalTime end) {
         if(start.isBefore(end)) {
             System.out.println("true");
         }else{
@@ -107,6 +106,55 @@ public class MyJDBC {
         }
         long seconds = ChronoUnit.SECONDS.between(start, end);
         return LocalTime.ofSecondOfDay(seconds);
+    }*/
+
+    public static LocalTime difference(LocalTime start, LocalTime end) {
+        int sec1 = start.getSecond();
+        int sec2 = end.getSecond();
+        int min1 = start.getMinute();
+        int min2 = end.getMinute();
+        int hour1 = start.getHour();
+        int hour2 = end.getHour();
+
+        int newMin;
+        int newSec;
+        int newHour;
+        int minDec = 0;
+        int hourDec = 0;
+
+        if(sec2 >= sec1){
+            newSec = sec2 - sec1;
+        }else {
+            newSec = sec2 + 60 - sec1;
+            minDec++;
+        }
+
+        if(min2 >= min1){
+            newMin = min2 - min1;
+            if(minDec > 0) {
+                newMin = newMin - minDec;
+                if(newMin < 0) {
+                    newMin = 59;
+                    hourDec++;
+                }
+
+            }
+        }else{
+            newMin = min2 + 60 - min1;
+            hourDec++;
+            if(minDec > 0) {
+                newMin = newMin - minDec;
+            }
+
+        }
+        newHour = hour2 - hour1 - hourDec;
+
+        LocalTime newTime = LocalTime.of(newHour, newMin, newSec);
+        return newTime;
+
+
+
+
     }
 
     public ArrayList<StudyBlock> makeAListOfADaysStudyBlocks(LocalDate whichDay) throws SQLException {
