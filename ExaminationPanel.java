@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
+
 
 public class ExaminationPanel extends JPanel { // For the detailed day look
 
@@ -39,11 +39,15 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     JLabel labelGoalString;
     JLabel labelGoalInt;
     JLabel dateLabelAtTop;
+    LocalTime totalTime;
+    LocalTime goalTime;
+
 
     // table layout
     JTable table;
     DefaultTableModel model;
     JScrollPane scrollPane;
+    JProgressBar progressBar;
 
     ExaminationPanel() throws SQLException {
         setLayout(new BorderLayout(10, 10));
@@ -104,35 +108,25 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelPanel.add(labelGoalInt);
         this.add(labelPanel, BorderLayout.NORTH);
 
-        centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(2, 1));
 
-        progressBarPanel = new JPanel();
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setPreferredSize(new Dimension(420, 50));
-        progressBar.setValue(10);
-        progressBar.setStringPainted(true);
-        progressBarPanel.add(progressBar);
-
-        //progressBar.setString("Current Time: " + currentTime);
+        progressBarPanel = new JPanel(new GridBagLayout()); // Center it perfectly
+        progressBarPanel.setBackground(Color.WHITE);
+        progressBarPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_GRAY, 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20) // bigger padding
+        ));
 
 
 
-
+// --- Table + ScrollPane ---
         model = new DefaultTableModel();
         model.addColumn("Start Time");
         model.addColumn("Finish Time");
         model.addColumn("Worked Time");
 
-        // Create JTable and makes it rows uneditable by the user
         table = new JTable(model) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // UNCHANGED - All cells non-editable
-            }
+            @Override public boolean isCellEditable(int row, int column) { return false; }
         };
-
-        // ADD: Professional table styling
         table.setFont(table.getFont().deriveFont(13f));
         table.setRowHeight(25);
         table.setGridColor(BORDER_GRAY);
@@ -141,13 +135,11 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         table.setBackground(Color.WHITE);
         table.setForeground(DARK_GRAY);
 
-        // ADD: Professional header styling
         table.getTableHeader().setBackground(LIGHT_GRAY);
         table.getTableHeader().setForeground(DARK_GRAY);
         table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD, 12f));
         table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_GRAY));
 
-        // ADD: Professional scroll pane
         scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.WHITE);
         scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_GRAY, 1));
@@ -155,7 +147,25 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         scrollPane.getVerticalScrollBar().setBackground(LIGHT_GRAY);
         scrollPane.getHorizontalScrollBar().setBackground(LIGHT_GRAY);
 
-        add(scrollPane, BorderLayout.CENTER);
+// --- Center panel with GridBagLayout (add each component once) ---
+        centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+// Progress section (top ~30%)
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.30;
+        centerPanel.add(progressBarPanel, gbc);
+
+// Table section (bottom ~70%)
+        gbc.gridy = 1;
+        gbc.weighty = 0.70;
+        centerPanel.add(scrollPane, gbc);
+
+// Attach center panel to main layout
+        add(centerPanel, BorderLayout.CENTER);
 
         deleteBlock.addActionListener(e -> {
             int viewRow = table.getSelectedRow();
@@ -211,6 +221,29 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         addBlock.addActionListener(e -> {
 
         });
+
+    }
+    void setProgressBar() throws SQLException {
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setPreferredSize(new Dimension(450, 60));  // bigger
+        progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
+        progressBar.setBackground(Color.WHITE);
+        progressBar.setStringPainted(true);
+        progressBar.setOpaque(false);
+        progressBar.setUI(new RoundedProgressBarUI());
+        progressBarPanel.add(progressBar);  // center the bar within the panel
+
+        int totalSeconds = totalTime.toSecondOfDay();
+        int goalSeconds  = Math.max(1, goalTime.toSecondOfDay()); // avoid /0
+        if(totalSeconds>=goalSeconds) {
+            progressBar.setValue(100);
+        }else{
+            double totalDouble = totalSeconds;
+            double goalDouble = goalSeconds;
+            double result =( totalDouble * 100 ) / goalDouble;
+            progressBar.setValue((int) result);
+
+        }
     }
 
     // IMPROVED: Enhanced date preparation
@@ -235,8 +268,10 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     // IMPROVED: Dynamic colors based on goal achievement
     private void set(LocalDate whichDay) throws SQLException {
         this.whichDay = whichDay;
-        LocalTime totalTime = Main.m.getDayTotalTime(whichDay);
-        LocalTime goalTime = Main.m.getDayGoal(whichDay);
+        totalTime = Main.m.getDayTotalTime(whichDay);
+        goalTime = Main.m.getDayGoal(whichDay);
+
+        setProgressBar();
 
         // UNCHANGED: Format both to look exactly same
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
