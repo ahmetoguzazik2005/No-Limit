@@ -77,8 +77,6 @@ public class MyJDBC {
     public void addToDayImprovedCaller(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) throws SQLException {
         int days = (int) ChronoUnit.DAYS.between(startDate, endDate);
         if(days == 0) {
-            System.out.println("Added to day: " + difference(startTime, endTime));
-            System.out.println(startTime.getSecond() + " " + endTime.getSecond());
             addToDay(startDate, difference(startTime, endTime));
             return;
         }else{

@@ -114,8 +114,6 @@ public class StopWatchPanel extends JPanel {
                 try {
                     Main.m.addStudyBlock(currentBlock.startTime, currentBlock.endTime);
                     LocalDate startDate = currentBlock.startTime.toLocalDate();
-                    System.out.println(currentBlock.startTime + " " + currentBlock.endTime);
-                    System.out.println(currentBlock.startTime.getSecond() + " " + currentBlock.endTime.getSecond());
                     Main.m.addToDayImprovedCaller(startDate, LocalDate.now(), currentBlock.startTime.toLocalTime(), currentBlock.endTime.toLocalTime());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);

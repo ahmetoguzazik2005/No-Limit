@@ -19,6 +19,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     AnimatedPressButton addBlock;
     JPanel labelPanel;
     JLabel labelTotalString;
+    JPanel centerPanel;
+    JPanel progressBarPanel;
     JLabel labelTotalInt;
     JLabel labelGoalString;
     JLabel labelGoalInt;
@@ -55,9 +57,22 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelPanel.add(labelGoalInt);
         this.add(labelPanel, BorderLayout.NORTH);
 
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new GridLayout(2, 1));
+
+        progressBarPanel = new JPanel();
+        JProgressBar progressBar = new JProgressBar(0,100);
+        
+        //progressBar.setString("Current Time: " + currentTime);
+
+
+
+
         model = new DefaultTableModel();
         model.addColumn("Start Time");
         model.addColumn("Finish Time");
+
+
 
         // Create JTable and makes it rows uneditable by the user
         table = new JTable(model) {
@@ -69,8 +84,9 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         // Add to JScrollPane for scrolling
         scrollPane = new JScrollPane(table);
-
-        add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(scrollPane);
+        centerPanel.add(progressBarPanel);
+        add(centerPanel, BorderLayout.CENTER);
 
         deleteBlock.addActionListener(e -> {
             int viewRow = table.getSelectedRow();
@@ -137,6 +153,9 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             } else { // not sure how to give better feedback if not selected
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.");
             }
+        });
+        addBlock.addActionListener(e -> {
+
         });
     }
 
