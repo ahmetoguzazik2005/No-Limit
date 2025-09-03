@@ -43,11 +43,9 @@ public class MyJDBC {
     }
 
     public void addStudyBlock(LocalDateTime start, LocalDateTime end) throws SQLException {
-        Timestamp startTs = Timestamp.valueOf(start);
-        Timestamp endTs = Timestamp.valueOf(end);
 
         String sql = "INSERT INTO StudyBlocks (start_time, finish_time) VALUES ('"
-                + startTs + "', '" + endTs + "')";
+                + start.format(SQL_FORMAT) + "', '" + end.format(SQL_FORMAT) + "')";
 
         statement.executeUpdate(sql);
     }
@@ -69,7 +67,7 @@ public class MyJDBC {
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
 
         String sql = "UPDATE Days " +
-                "SET total_time = ADDTIME(total_time, '" + Time.valueOf(time) + "') " +
+                "SET total_time = ADDTIME(total_time, '" + time.format(SQL_TIME) + "') " +
                 "WHERE day_date = '" + day.format(SQL_DATE) + "'";
 
         statement.executeUpdate(sql);
