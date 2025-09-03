@@ -22,6 +22,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     JLabel labelTotalInt;
     JLabel labelGoalString;
     JLabel labelGoalInt;
+    JLabel dateLabelAtTop;
 
     // table layout
     JTable table;
@@ -42,6 +43,10 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         labelPanel = new JPanel();
         labelPanel.setLayout(new FlowLayout());
+
+        dateLabelAtTop = new JLabel();
+        labelPanel.add(dateLabelAtTop);
+
         labelTotalString = new JLabel("Total Time: ");
         labelPanel.add(labelTotalString);
 
@@ -80,19 +85,13 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 int modelRow = table.convertRowIndexToModel(viewRow);
 
                 String startTime = (String) model.getValueAt(modelRow, 0);
-                String endTime   = (String) model.getValueAt(modelRow, 1);
+                String endTime = (String) model.getValueAt(modelRow, 1);
 
-                // split "YYYY-MM-DD HH:MM:SS"
-                String[] partsForBeginning = startTime.split(" ");
-                String datePartBeginning = partsForBeginning[0];
-                String timePartBeginning = partsForBeginning[1];
-
-                String[] partsForEnd = endTime.split(" ");
-                String timePartEnd = partsForEnd[1];
+                String datePartBeginning = whichDay.toString();
 
                 // compute difference (begin → end)
-                LocalTime ltBegin = LocalTime.parse(timePartBeginning);
-                LocalTime ltEnd   = LocalTime.parse(timePartEnd);
+                LocalTime ltBegin = LocalTime.parse(startTime);
+                LocalTime ltEnd = LocalTime.parse(endTime);
                 LocalTime difference = MyJDBC.difference(ltBegin, ltEnd);
 
                 // parse for DB ops
@@ -144,6 +143,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     void prepareEverything(LocalDate whichDay) throws SQLException {
         set(whichDay);
         populateTable(whichDay);
+        dateLabelAtTop.setText("Date: " + whichDay);
     }
 
     private void set(LocalDate whichDay) throws SQLException {
@@ -166,9 +166,9 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
         model.setRowCount(0);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");// can be changed in the future
-                                                                                         // just to make visual more
-                                                                                         // meaningful
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");// can be changed in the future
+        // just to make visual more
+        // meaningful
 
         // adding blocks to my table
         for (StudyBlock block : blocks) {
