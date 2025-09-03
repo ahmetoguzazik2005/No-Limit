@@ -61,8 +61,12 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         centerPanel.setLayout(new GridLayout(2, 1));
 
         progressBarPanel = new JPanel();
-        JProgressBar progressBar = new JProgressBar(0,100);
-        
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setPreferredSize(new Dimension(420, 50));
+        progressBar.setValue(10);
+        progressBar.setStringPainted(true);
+        progressBarPanel.add(progressBar);
+
         //progressBar.setString("Current Time: " + currentTime);
 
 
