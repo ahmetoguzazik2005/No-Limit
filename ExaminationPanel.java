@@ -265,7 +265,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
-    // IMPROVED: Dynamic colors based on goal achievement
     private void set(LocalDate whichDay) throws SQLException {
         this.whichDay = whichDay;
         totalTime = Main.m.getDayTotalTime(whichDay);
@@ -273,7 +272,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         setProgressBar();
 
-        // UNCHANGED: Format both to look exactly same
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String formattedTotalTime = totalTime.format(formatter);
         String formattedGoalTime = goalTime.format(formatter);
@@ -281,7 +279,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelTotalInt.setText(formattedTotalTime);
         labelGoalInt.setText(formattedGoalTime);
 
-        // NEW: Dynamic color updates based on goal achievement
         if (totalTime != null && goalTime != null) {
             if (goalTime.isAfter(totalTime)) {
                 // Goal not met - red colors
@@ -302,6 +299,43 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
+    private String verbalWorkedTime(String workString) {
+        String answer = "";
+        String[] parts = workString.split(":");
+
+        if (parts[0].equals("00")) {
+        } else if (parts[0].equals("01")) {
+            answer += "1 hour ";
+        } else if (parts[0].startsWith("0")) {
+            answer += parts[0].substring(1) + " hours ";
+        } else {
+            answer += parts[0] + " hours ";
+        }
+
+        if (parts[1].equals("00")) {
+        } else if (parts[1].equals("01")) {
+            answer += "1 minute ";
+        } else if (parts[1].startsWith("0")) {
+            answer += parts[1].substring(1) + " minutes ";
+        } else {
+            answer += parts[1] + " minutes ";
+        }
+
+        if (parts[2].equals("00")) {
+        } else if (parts[2].equals("01")) {
+            answer += "1 second ";
+        } else if (parts[2].startsWith("0")) {
+            answer += parts[2].substring(1) + " seconds ";
+        } else {
+            answer += parts[2] + " seconds ";
+        }
+
+        if (answer.equals("")) {
+            return "None";
+        }
+        return answer;
+    }
+
     // UNCHANGED: populateTable method stays exactly the same
     void populateTable(LocalDate whichDay) throws SQLException {
         blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
@@ -314,6 +348,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                     Duration.between(block.startTime, block.endTime).toHours(),
                     Duration.between(block.startTime, block.endTime).toMinutesPart(),
                     Duration.between(block.startTime, block.endTime).toSecondsPart());
+            duration = verbalWorkedTime(duration);
 
             Object[] rowData = {
                     block.startTime.toLocalTime().format(formatter),
