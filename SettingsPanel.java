@@ -17,8 +17,8 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
     private JSpinner hoursSpinner;
     private JSpinner minutesSpinner;
 
-    private JLabel previewLabel;   // live “Goal: Xh Ym (ZZZ min)”
-    private JLabel statusLabel;    // success / error line
+    private JLabel previewLabel; // live “Goal: Xh Ym (ZZZ min)”
+    private JLabel statusLabel; // success / error line
 
     private int hours;
     private int minutes;
@@ -31,7 +31,8 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
 
         // “Card” container
         JPanel card = new JPanel(new GridBagLayout()) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 // subtle gradient
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -46,7 +47,7 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         card.setOpaque(false);
         card.setBorder(new CompoundBorder(new LineBorder(new Color(210, 225, 240), 1, true),
                 new EmptyBorder(18, 18, 18, 18)));
-        GridBagConstraints root = gbc(0,0,1,1,1,1);
+        GridBagConstraints root = gbc(0, 0, 1, 1, 1, 1);
         root.fill = GridBagConstraints.BOTH;
         add(card, root);
 
@@ -61,8 +62,8 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         header.add(title, BorderLayout.NORTH);
         header.add(subtitle, BorderLayout.CENTER);
 
-        GridBagConstraints c = gbc(0,0,1,1,1,0);
-        c.insets = new Insets(0,0,16,0);
+        GridBagConstraints c = gbc(0, 0, 1, 1, 1, 0);
+        c.insets = new Insets(0, 0, 16, 0);
         card.add(header, c);
 
         // Form (labels + spinners)
@@ -84,19 +85,19 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         mLabel.setLabelFor(minutesSpinner);
 
         // nice row layout
-        GridBagConstraints f = gbc(0,0,1,1,0,0);
+        GridBagConstraints f = gbc(0, 0, 1, 1, 0, 0);
         f.insets = new Insets(6, 0, 6, 12);
         f.anchor = GridBagConstraints.LINE_START;
         form.add(hLabel, f);
 
-        f = gbc(1,0,1,1,0,0);
+        f = gbc(1, 0, 1, 1, 0, 0);
         form.add(hoursSpinner, f);
 
-        f = gbc(2,0,1,1,0,0);
+        f = gbc(2, 0, 1, 1, 0, 0);
         f.insets = new Insets(6, 18, 6, 12);
         form.add(mLabel, f);
 
-        f = gbc(3,0,1,1,1,0);
+        f = gbc(3, 0, 1, 1, 1, 0);
         form.add(minutesSpinner, f);
 
         // Live preview line
@@ -104,12 +105,12 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         previewLabel.setFont(previewLabel.getFont().deriveFont(Font.PLAIN, 14f));
         previewLabel.setForeground(new Color(70, 90, 110));
 
-        f = gbc(0,1,4,1,1,0);
+        f = gbc(0, 1, 4, 1, 1, 0);
         f.insets = new Insets(4, 0, 0, 0);
         form.add(previewLabel, f);
 
-        c = gbc(0,1,1,1,1,0);
-        c.insets = new Insets(0,0,16,0);
+        c = gbc(0, 1, 1, 1, 1, 0);
+        c.insets = new Insets(0, 0, 16, 0);
         card.add(form, c);
 
         // Buttons
@@ -130,13 +131,13 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         buttons.add(resetButton);
         buttons.add(setGoalButton);
 
-        c = gbc(0,2,1,1,1,0);
+        c = gbc(0, 2, 1, 1, 1, 0);
         card.add(buttons, c);
 
         // Status line
         statusLabel = new JLabel(" ");
         statusLabel.setForeground(new Color(25, 135, 84)); // green when OK
-        c = gbc(0,3,1,1,1,0);
+        c = gbc(0, 3, 1, 1, 1, 0);
         c.insets = new Insets(10, 0, 0, 0);
         card.add(statusLabel, c);
 
@@ -149,8 +150,10 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         ActionMap am = card.getActionMap();
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "submit");
         am.put("submit", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) {
-                if (setGoalButton.isEnabled()) setGoalButton.doClick();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (setGoalButton.isEnabled())
+                    setGoalButton.doClick();
             }
         });
 
@@ -159,8 +162,12 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
 
     private static GridBagConstraints gbc(int x, int y, int w, int h, double wx, double wy) {
         GridBagConstraints g = new GridBagConstraints();
-        g.gridx = x; g.gridy = y; g.gridwidth = w; g.gridheight = h;
-        g.weightx = wx; g.weighty = wy;
+        g.gridx = x;
+        g.gridy = y;
+        g.gridwidth = w;
+        g.gridheight = h;
+        g.weightx = wx;
+        g.weighty = wy;
         g.fill = GridBagConstraints.HORIZONTAL;
         return g;
     }
@@ -198,7 +205,8 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         } else if (src == resetButton) {
             hoursSpinner.setValue(0);
             minutesSpinner.setValue(0);
-            hours = 0; minutes = 0;
+            hours = 0;
+            minutes = 0;
             statusLabel.setForeground(new Color(108, 117, 125));
             statusLabel.setText("Cleared. No daily goal.");
             updatePreviewAndButton();
@@ -210,14 +218,23 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
         // Keep values in bounds and update live preview
         int h = (int) hoursSpinner.getValue();
         int m = (int) minutesSpinner.getValue();
-        if (h < 0) hoursSpinner.setValue(0);
-        if (h > 23) hoursSpinner.setValue(23);
-        if (m < 0) minutesSpinner.setValue(0);
-        if (m > 59) minutesSpinner.setValue(59);
+        if (h < 0)
+            hoursSpinner.setValue(0);
+        if (h > 23)
+            hoursSpinner.setValue(23);
+        if (m < 0)
+            minutesSpinner.setValue(0);
+        if (m > 59)
+            minutesSpinner.setValue(59);
         updatePreviewAndButton();
     }
 
     // Optional getters if you want to read them from elsewhere
-    public int getHours()   { return hours; }
-    public int getMinutes() { return minutes; }
+    public int getHours() {
+        return hours;
+    }
+
+    public int getMinutes() {
+        return minutes;
+    }
 }

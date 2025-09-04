@@ -18,7 +18,7 @@ public class MyJDBC {
     ResultSet resultSet;
 
     MyJDBC() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "password");
+        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "22042005Hid.");
         statement = connection.createStatement();
     }
 
@@ -50,19 +50,24 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
-    /*public void addToDay(LocalDate day, int hours, int minutes, int seconds) throws SQLException {
-        String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        // Ensure the row exists (so UPDATE always works)
-        statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
-
-        String sql = "UPDATE Days " +
-                "SET total_time = ADDTIME(total_time, '" + delta + "') " +
-                "WHERE day_date = '" + day.format(SQL_DATE) + "'";
-
-        statement.executeUpdate(sql);
-
-    }*/
-    private void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the errors
+    /*
+     * public void addToDay(LocalDate day, int hours, int minutes, int seconds)
+     * throws SQLException {
+     * String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+     * // Ensure the row exists (so UPDATE always works)
+     * statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" +
+     * day.format(SQL_DATE) + "')"); // create
+     * 
+     * String sql = "UPDATE Days " +
+     * "SET total_time = ADDTIME(total_time, '" + delta + "') " +
+     * "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+     * 
+     * statement.executeUpdate(sql);
+     * 
+     * }
+     */
+    private void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the
+                                                                               // errors
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
 
@@ -74,18 +79,19 @@ public class MyJDBC {
 
     }
 
-    public void addToDayImprovedCaller(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) throws SQLException {
+    public void addToDayImprovedCaller(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime)
+            throws SQLException {
         int days = (int) ChronoUnit.DAYS.between(startDate, endDate);
-        if(days == 0) {
+        if (days == 0) {
             addToDay(startDate, difference(startTime, endTime));
             return;
-        }else{
+        } else {
             LocalTime endOfTheDay = LocalTime.of(23, 59, 59);
             LocalTime startOfTheDay = LocalTime.of(0, 0, 0);
-            for(int i = 0; i < days; i++) {
-                if(i == days - 1) {
+            for (int i = 0; i < days; i++) {
+                if (i == days - 1) {
                     addToDay(startDate.plusDays(i), difference(startOfTheDay, endTime));
-                }else{
+                } else {
                     addToDay(startDate.plusDays(i), difference(startTime, endOfTheDay));
                 }
 
@@ -94,15 +100,17 @@ public class MyJDBC {
 
     }
 
-   /* public static LocalTime difference(LocalTime start, LocalTime end) {
-        if(start.isBefore(end)) {
-            System.out.println("true");
-        }else{
-            System.out.println("false");
-        }
-        long seconds = ChronoUnit.SECONDS.between(start, end);
-        return LocalTime.ofSecondOfDay(seconds);
-    }*/
+    /*
+     * public static LocalTime difference(LocalTime start, LocalTime end) {
+     * if(start.isBefore(end)) {
+     * System.out.println("true");
+     * }else{
+     * System.out.println("false");
+     * }
+     * long seconds = ChronoUnit.SECONDS.between(start, end);
+     * return LocalTime.ofSecondOfDay(seconds);
+     * }
+     */
 
     public static LocalTime difference(LocalTime start, LocalTime end) {
         int sec1 = start.getSecond();
@@ -118,27 +126,27 @@ public class MyJDBC {
         int minDec = 0;
         int hourDec = 0;
 
-        if(sec2 >= sec1){
+        if (sec2 >= sec1) {
             newSec = sec2 - sec1;
-        }else {
+        } else {
             newSec = sec2 + 60 - sec1;
             minDec++;
         }
 
-        if(min2 >= min1){
+        if (min2 >= min1) {
             newMin = min2 - min1;
-            if(minDec > 0) {
+            if (minDec > 0) {
                 newMin = newMin - minDec;
-                if(newMin < 0) {
+                if (newMin < 0) {
                     newMin = 59;
                     hourDec++;
                 }
 
             }
-        }else{
+        } else {
             newMin = min2 + 60 - min1;
             hourDec++;
-            if(minDec > 0) {
+            if (minDec > 0) {
                 newMin = newMin - minDec;
             }
 
@@ -147,9 +155,6 @@ public class MyJDBC {
 
         LocalTime newTime = LocalTime.of(newHour, newMin, newSec);
         return newTime;
-
-
-
 
     }
 
@@ -248,6 +253,5 @@ public class MyJDBC {
         statement.executeUpdate(sql);
 
     }
-
 
 }
