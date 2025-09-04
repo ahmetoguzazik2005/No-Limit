@@ -112,6 +112,12 @@ public class MyFrame extends JFrame implements ActionListener {
 
         } else if (e.getSource() == button3) {
             cardLayout.show(right, "TrackPanel");
+            try {
+                // updates colors for every opening more consistent visual
+                trackPanel.updateCalendarDisplay();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
 
         } else if (e.getSource() == button4) {
             cardLayout.show(right, "SettingsPanel");

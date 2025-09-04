@@ -10,7 +10,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-
 public class ExaminationPanel extends JPanel { // For the detailed day look
 
     // ADD: Professional color constants (same as TrackPanel)
@@ -41,7 +40,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     JLabel dateLabelAtTop;
     LocalTime totalTime;
     LocalTime goalTime;
-
 
     // table layout
     JTable table;
@@ -108,7 +106,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelPanel.add(labelGoalInt);
         this.add(labelPanel, BorderLayout.NORTH);
 
-
         progressBarPanel = new JPanel(new GridBagLayout()); // Center it perfectly
         progressBarPanel.setBackground(Color.WHITE);
         progressBarPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -116,16 +113,27 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 BorderFactory.createEmptyBorder(20, 20, 20, 20) // bigger padding
         ));
 
+        ///////initial visible part of progressBar
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setPreferredSize(new Dimension(450, 60)); // bigger
+        progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
+        progressBar.setBackground(Color.WHITE);
+        progressBar.setStringPainted(true);
+        progressBar.setOpaque(false);
+        progressBar.setUI(new RoundedProgressBarUI());
+        progressBarPanel.add(progressBar); // center the bar within the panel
 
-
-// --- Table + ScrollPane ---
+        // --- Table + ScrollPane ---
         model = new DefaultTableModel();
         model.addColumn("Start Time");
         model.addColumn("Finish Time");
         model.addColumn("Worked Time");
 
         table = new JTable(model) {
-            @Override public boolean isCellEditable(int row, int column) { return false; }
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
         table.setFont(table.getFont().deriveFont(13f));
         table.setRowHeight(25);
@@ -147,24 +155,24 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         scrollPane.getVerticalScrollBar().setBackground(LIGHT_GRAY);
         scrollPane.getHorizontalScrollBar().setBackground(LIGHT_GRAY);
 
-// --- Center panel with GridBagLayout (add each component once) ---
+        // --- Center panel with GridBagLayout (add each component once) ---
         centerPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.BOTH;
 
-// Progress section (top ~30%)
+        // Progress section (top ~30%)
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.weighty = 0.30;
         centerPanel.add(progressBarPanel, gbc);
 
-// Table section (bottom ~70%)
+        // Table section (bottom ~70%)
         gbc.gridy = 1;
         gbc.weighty = 0.70;
         centerPanel.add(scrollPane, gbc);
 
-// Attach center panel to main layout
+        // Attach center panel to main layout
         add(centerPanel, BorderLayout.CENTER);
 
         deleteBlock.addActionListener(e -> {
@@ -223,26 +231,18 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         });
 
     }
+
     void setProgressBar() throws SQLException {
-        progressBar = new JProgressBar(0, 100);
-        progressBar.setPreferredSize(new Dimension(450, 60));  // bigger
-        progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
-        progressBar.setBackground(Color.WHITE);
-        progressBar.setStringPainted(true);
-        progressBar.setOpaque(false);
-        progressBar.setUI(new RoundedProgressBarUI());
-        progressBarPanel.add(progressBar);  // center the bar within the panel
 
         int totalSeconds = totalTime.toSecondOfDay();
-        int goalSeconds  = Math.max(1, goalTime.toSecondOfDay()); // avoid /0
-        if(totalSeconds>=goalSeconds) {
+        int goalSeconds = Math.max(1, goalTime.toSecondOfDay()); // avoid /0
+        if (totalSeconds >= goalSeconds) {
             progressBar.setValue(100);
-        }else{
+        } else {
             double totalDouble = totalSeconds;
             double goalDouble = goalSeconds;
-            double result =( totalDouble * 100 ) / goalDouble;
+            double result = (totalDouble * 100) / goalDouble;
             progressBar.setValue((int) result);
-
         }
     }
 
@@ -265,7 +265,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
-    // IMPROVED: Dynamic colors based on goal achievement
     private void set(LocalDate whichDay) throws SQLException {
         this.whichDay = whichDay;
         totalTime = Main.m.getDayTotalTime(whichDay);
@@ -273,7 +272,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         setProgressBar();
 
-        // UNCHANGED: Format both to look exactly same
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String formattedTotalTime = totalTime.format(formatter);
         String formattedGoalTime = goalTime.format(formatter);
@@ -281,7 +279,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelTotalInt.setText(formattedTotalTime);
         labelGoalInt.setText(formattedGoalTime);
 
-        // NEW: Dynamic color updates based on goal achievement
         if (totalTime != null && goalTime != null) {
             if (goalTime.isAfter(totalTime)) {
                 // Goal not met - red colors
@@ -302,6 +299,43 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
+    private String verbalWorkedTime(String workString) {
+        String answer = "";
+        String[] parts = workString.split(":");
+
+        if (parts[0].equals("00")) {
+        } else if (parts[0].equals("01")) {
+            answer += "1 hour ";
+        } else if (parts[0].startsWith("0")) {
+            answer += parts[0].substring(1) + " hours ";
+        } else {
+            answer += parts[0] + " hours ";
+        }
+
+        if (parts[1].equals("00")) {
+        } else if (parts[1].equals("01")) {
+            answer += "1 minute ";
+        } else if (parts[1].startsWith("0")) {
+            answer += parts[1].substring(1) + " minutes ";
+        } else {
+            answer += parts[1] + " minutes ";
+        }
+
+        if (parts[2].equals("00")) {
+        } else if (parts[2].equals("01")) {
+            answer += "1 second ";
+        } else if (parts[2].startsWith("0")) {
+            answer += parts[2].substring(1) + " seconds ";
+        } else {
+            answer += parts[2] + " seconds ";
+        }
+
+        if (answer.equals("")) {
+            return "None";
+        }
+        return answer;
+    }
+
     // UNCHANGED: populateTable method stays exactly the same
     void populateTable(LocalDate whichDay) throws SQLException {
         blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
@@ -314,6 +348,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                     Duration.between(block.startTime, block.endTime).toHours(),
                     Duration.between(block.startTime, block.endTime).toMinutesPart(),
                     Duration.between(block.startTime, block.endTime).toSecondsPart());
+            duration = verbalWorkedTime(duration);
 
             Object[] rowData = {
                     block.startTime.toLocalTime().format(formatter),
