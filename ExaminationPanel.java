@@ -243,8 +243,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             double goalDouble = goalSeconds;
             double result = (totalDouble * 100) / goalDouble;
             progressBar.setValue((int) result);
-            System.out.println(progressBar.getValue());
-
         }
     }
 
