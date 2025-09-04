@@ -1,8 +1,9 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -46,6 +47,9 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     DefaultTableModel model;
     JScrollPane scrollPane;
     JProgressBar progressBar;
+
+    // NEW: for hover highlight
+    private int hoverRow = -1;
 
     ExaminationPanel() throws SQLException {
         setLayout(new BorderLayout(10, 10));
@@ -129,10 +133,32 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         model.addColumn("Finish Time");
         model.addColumn("Worked Time");
 
+        // Single JTable instance: also handles zebra/hover in prepareRenderer
         table = new JTable(model) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
+            }
+
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+
+                boolean selected = isRowSelected(row);
+                Color even = new Color(252, 252, 252);
+                Color odd  = new Color(245, 247, 250);
+                Color hover = new Color(232, 240, 254);
+
+                if (!selected) {
+                    c.setBackground((row % 2 == 0) ? even : odd);
+                    if (row == hoverRow) c.setBackground(hover);
+                }
+                if (c instanceof JComponent jc) {
+                    // left/right padding
+                    jc.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+                }
+                c.setForeground(selected ? Color.WHITE : DARK_GRAY);
+                return c;
             }
         };
         table.setFont(table.getFont().deriveFont(13f));
@@ -143,10 +169,11 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         table.setBackground(Color.WHITE);
         table.setForeground(DARK_GRAY);
 
-        table.getTableHeader().setBackground(LIGHT_GRAY);
-        table.getTableHeader().setForeground(DARK_GRAY);
-        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD, 12f));
-        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_GRAY));
+        JTableHeader th = table.getTableHeader();
+        th.setBackground(LIGHT_GRAY);
+        th.setForeground(DARK_GRAY);
+        th.setFont(th.getFont().deriveFont(Font.BOLD, 12f));
+        th.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_GRAY));
 
         scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.WHITE);
@@ -170,6 +197,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         // Table section (bottom ~70%)
         gbc.gridy = 1;
         gbc.weighty = 0.70;
+        installTableStyle(); // style + behavior
         centerPanel.add(scrollPane, gbc);
 
         // Attach center panel to main layout
@@ -204,12 +232,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 }
 
                 try {
-                    set(whichDay);
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-
-                try {
                     Main.myFrame.trackPanel.updateCalendarDisplay();
                 } catch (SQLException e1) {
                     e1.printStackTrace();
@@ -217,7 +239,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
                 model.removeRow(viewRow);
                 try {
-                    set(whichDay);
+                    set();
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -229,11 +251,84 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         addBlock.addActionListener(e -> {
 
         });
+    }
 
+    // Styles + behavior for the existing table (no reassignments)
+    private void installTableStyle() {
+        table.setAutoCreateRowSorter(true);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setFillsViewportHeight(true);
+        table.setShowHorizontalLines(true);
+        table.setShowVerticalLines(false);
+        table.setIntercellSpacing(new Dimension(0, 1));
+        table.setGridColor(new Color(238, 238, 238)); // soft divider
+        table.setRowHeight(28);
+
+        // Header polish
+        JTableHeader header = table.getTableHeader();
+        header.setReorderingAllowed(false);
+        header.setResizingAllowed(true);
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 36));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_GRAY));
+
+        // Center-align the time columns
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(SwingConstants.CENTER);
+        table.getColumnModel().getColumn(0).setCellRenderer(center);
+        table.getColumnModel().getColumn(1).setCellRenderer(center);
+
+        // Monospace + emphasize the Worked Time column for readability
+        final Font mono = new Font("JetBrains Mono", Font.PLAIN, 13).getFamily().equals("Dialog")
+                ? new Font(Font.MONOSPACED, Font.PLAIN, 13)
+                : new Font("JetBrains Mono", Font.PLAIN, 13);
+
+        DefaultTableCellRenderer worked = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                Component c = super.getTableCellRendererComponent(t, value, isSelected, hasFocus, row, col);
+                c.setFont(mono.deriveFont(Font.BOLD));
+                setHorizontalAlignment(SwingConstants.CENTER);
+                return c;
+            }
+        };
+        table.getColumnModel().getColumn(2).setCellRenderer(worked);
+
+        // Column sizing
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(0).setPreferredWidth(110);
+        table.getColumnModel().getColumn(1).setPreferredWidth(110);
+        table.getColumnModel().getColumn(2).setPreferredWidth(220);
+
+        // Hover tracking (uses panel field hoverRow)
+        table.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override public void mouseMoved(java.awt.event.MouseEvent e) {
+                int r = table.rowAtPoint(e.getPoint());
+                if (r != -1 && r != hoverRow) {
+                    hoverRow = r;
+                    table.repaint();
+                }
+            }
+        });
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override public void mouseExited(java.awt.event.MouseEvent e) {
+                hoverRow = -1;
+                table.repaint();
+            }
+        });
+
+        // Subtle scrollpane polish
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_GRAY, 1),
+                BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        ));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        // Handy tooltip
+        table.setToolTipText("Tip: Click a row to select it, then use Delete Block.");
     }
 
     void setProgressBar() throws SQLException {
-
         int totalSeconds = totalTime.toSecondOfDay();
         int goalSeconds = Math.max(1, goalTime.toSecondOfDay()); // avoid /0
         if (totalSeconds >= goalSeconds) {
@@ -245,11 +340,13 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             progressBar.setValue((int) result);
         }
     }
-
+    // Note for us: prepareEverything->set>setProgressBar
     // IMPROVED: Enhanced date preparation
     void prepareEverything(LocalDate whichDay) throws SQLException {
-        set(whichDay);
-        populateTable(whichDay);
+        this.whichDay = whichDay;
+        set();
+        setProgressBar();
+        populateTable();
 
         // Professional date formatting
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
@@ -265,12 +362,10 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
-    private void set(LocalDate whichDay) throws SQLException {
-        this.whichDay = whichDay;
+    private void set() throws SQLException {
         totalTime = Main.m.getDayTotalTime(whichDay);
         goalTime = Main.m.getDayGoal(whichDay);
 
-        setProgressBar();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String formattedTotalTime = totalTime.format(formatter);
@@ -337,7 +432,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     }
 
     // UNCHANGED: populateTable method stays exactly the same
-    void populateTable(LocalDate whichDay) throws SQLException {
+    void populateTable() throws SQLException {
         blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
         model.setRowCount(0);
 
