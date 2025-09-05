@@ -16,7 +16,7 @@ public class MyFrame extends JFrame implements ActionListener {
     JButton button3;
     JButton button4;
     // this panels may need to be called from the outside
-    TrackPanel trackPanel;
+    static TrackPanel trackPanel;
     TodayPanel todayPanel;
     SettingsPanel settingsPanel;
     StopWatchPanel stopwatchPanel;

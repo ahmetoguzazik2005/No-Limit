@@ -35,6 +35,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     JLabel labelTotalString;
     JPanel centerPanel;
     JPanel progressBarPanel;
+    JPanel addBlockPanel;
+    CardLayout cardLayout;
     JLabel labelTotalInt;
     JLabel labelGoalString;
     JLabel labelGoalInt;
@@ -110,14 +112,19 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         labelPanel.add(labelGoalInt);
         this.add(labelPanel, BorderLayout.NORTH);
 
-        progressBarPanel = new JPanel(new GridBagLayout()); // Center it perfectly
+        progressBarPanel = new JPanel(); // Center it perfectly
         progressBarPanel.setBackground(Color.WHITE);
         progressBarPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_GRAY, 1),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20) // bigger padding
         ));
 
-        ///////initial visible part of progressBar
+        // Putting 2 panels to the upper center with card layout
+        cardLayout = new CardLayout();
+        progressBarPanel.setLayout(cardLayout);
+
+
+        //initial visible part of progressBar
         progressBar = new JProgressBar(0, 100);
         progressBar.setPreferredSize(new Dimension(450, 60)); // bigger
         progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
@@ -125,7 +132,12 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         progressBar.setStringPainted(true);
         progressBar.setOpaque(false);
         progressBar.setUI(new RoundedProgressBarUI());
-        progressBarPanel.add(progressBar); // center the bar within the panel
+
+
+        // Adding these to card layout
+        progressBarPanel.add(progressBar, "ProgressBar");
+        progressBarPanel.add(addBlockPanel, "AddBlockPanel");
+        cardLayout.show(progressBarPanel, "ProgressBar");
 
         // --- Table + ScrollPane ---
         model = new DefaultTableModel();
@@ -232,7 +244,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 }
 
                 try {
-                    Main.myFrame.trackPanel.updateCalendarDisplay();
+                    MyFrame.trackPanel.updateCalendarDisplay();
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
