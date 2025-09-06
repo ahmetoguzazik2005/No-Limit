@@ -1,11 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class TimeSelectionPanel extends JPanel {
     private JComboBox<String> startHour, startMinute, startSecond;
     private JComboBox<String> finishHour, finishMinute, finishSecond;
     private JButton confirmButton;
     private JLabel resultLabel;
+    public static LocalTime addedStartTime;
+    public static LocalTime addedEndTime;
+    public static LocalDate whichDay;
 
     public TimeSelectionPanel() {
         setLayout(new GridBagLayout());
@@ -88,6 +97,7 @@ public class TimeSelectionPanel extends JPanel {
 
     private void handleConfirmation() {
         try {
+            whichDay = ExaminationPanel.whichDay;
             // Start time
             int sh = readAndNormalize(startHour,   23);
             int sm = readAndNormalize(startMinute, 59);
@@ -108,6 +118,45 @@ public class TimeSelectionPanel extends JPanel {
                         "✅ Selected range: %02d:%02d:%02d → %02d:%02d:%02d",
                         sh, sm, ss, fh, fm, fs
                 ));
+                LocalTime addedStartTime = LocalTime.of(sh, sm, ss);
+                LocalTime addedEndTime = LocalTime.of(fh, fm, fs);
+                LocalDateTime addedStartDateTime = LocalDateTime.of(whichDay, addedStartTime);
+                LocalDateTime addedEndDateTime = LocalDateTime.of(whichDay, addedEndTime);
+                try {
+                    Main.m.addStudyBlock(addedStartDateTime, addedEndDateTime);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    Main.m.addToDayImprovedCaller(whichDay, whichDay, addedStartTime, addedEndTime);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    MyFrame.trackPanel.updateCalendarDisplay();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                String duration = String.format("%02d:%02d:%02d",
+                        Duration.between(addedStartTime, addedEndTime).toHours(),
+                        Duration.between(addedStartTime, addedEndTime).toMinutesPart(),
+                        Duration.between(addedStartTime, addedEndTime).toSecondsPart());
+                duration = ExaminationPanel.verbalWorkedTime(duration);
+                Object[] rowData = {
+                        addedStartTime.format(formatter),
+                        addedEndDateTime.format(formatter),
+                        duration
+                };
+                ExaminationPanel.model.addRow(rowData);
+
+                try {
+                    ExaminationPanel.set();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+
+
                 resultLabel.setForeground(new Color(0, 128, 0));
             }
         } catch (NumberFormatException ex) {
@@ -116,15 +165,4 @@ public class TimeSelectionPanel extends JPanel {
         }
     }
 
-    // Test the panel
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Time Selection Panel");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(420, 220);
-            frame.setLocationRelativeTo(null);
-            frame.add(new TimeSelectionPanel());
-            frame.setVisible(true);
-        });
-    }
 }

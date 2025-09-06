@@ -24,29 +24,30 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     public static final Color INACTIVE_TEXT = new Color(158, 158, 158);
 
     // general part - UNCHANGED
-    LocalDate whichDay;
+    public static LocalDate whichDay;
     ArrayList<StudyBlock> blocks;
 
+    boolean addBlockOn;
     // goal and total layout
     JPanel buttonPanel;
     AnimatedPressButton deleteBlock;
     AnimatedPressButton addBlock;
-    JPanel labelPanel;
+    static JPanel labelPanel;
     JLabel labelTotalString;
     JPanel centerPanel;
     JPanel progressBarPanel;
     JPanel addBlockPanel;
     CardLayout cardLayout;
-    JLabel labelTotalInt;
+    static JLabel labelTotalInt;
     JLabel labelGoalString;
-    JLabel labelGoalInt;
+    static JLabel labelGoalInt;
     JLabel dateLabelAtTop;
-    LocalTime totalTime;
-    LocalTime goalTime;
+    static LocalTime totalTime;
+    static LocalTime goalTime;
 
     // table layout
     JTable table;
-    DefaultTableModel model;
+    public static DefaultTableModel model;
     JScrollPane scrollPane;
     JProgressBar progressBar;
 
@@ -54,6 +55,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     private int hoverRow = -1;
 
     ExaminationPanel() throws SQLException {
+        addBlockOn = false;
         setLayout(new BorderLayout(10, 10));
         setBackground(WARM_BEIGE); // ADD: Professional background
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // ADD: Padding
@@ -134,6 +136,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         progressBar.setUI(new RoundedProgressBarUI());
 
 
+        addBlockPanel = new TimeSelectionPanel();
         // Adding these to card layout
         progressBarPanel.add(progressBar, "ProgressBar");
         progressBarPanel.add(addBlockPanel, "AddBlockPanel");
@@ -261,6 +264,17 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             }
         });
         addBlock.addActionListener(e -> {
+            if(addBlockOn){
+                addBlockOn = false;
+                cardLayout.show(progressBarPanel, "ProgressBar");
+                addBlock.setText("Add Block");
+
+            }else{
+                addBlockOn = true;
+                cardLayout.show(progressBarPanel, "AddBlockPanel");
+                addBlock.setText("Progress Bar");
+            }
+
 
         });
     }
@@ -355,7 +369,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     // Note for us: prepareEverything->set>setProgressBar
     // IMPROVED: Enhanced date preparation
     void prepareEverything(LocalDate whichDay) throws SQLException {
-        this.whichDay = whichDay;
+        ExaminationPanel.whichDay = whichDay;
         set();
         setProgressBar();
         populateTable();
@@ -374,7 +388,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
-    private void set() throws SQLException {
+    public static void set() throws SQLException {
         totalTime = Main.m.getDayTotalTime(whichDay);
         goalTime = Main.m.getDayGoal(whichDay);
 
@@ -406,7 +420,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         }
     }
 
-    private String verbalWorkedTime(String workString) {
+    public static String verbalWorkedTime(String workString) {
         String answer = "";
         String[] parts = workString.split(":");
 
