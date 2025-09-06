@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class TimeSelectionPanel extends JPanel {
     private JComboBox<String> startHour, startMinute, startSecond;
@@ -94,6 +95,29 @@ public class TimeSelectionPanel extends JPanel {
     private void normalizeComboText(JComboBox<String> combo, int max) {
         try { readAndNormalize(combo, max); } catch (Exception ignored) {}
     }
+    private boolean isBlockNotSuitable(LocalDateTime addedStartTime, LocalDateTime addedEndTime)  {
+        try {
+            ArrayList<StudyBlock> blocks = Main.m.makeAListOfADaysStudyBlocks(whichDay);
+            for(StudyBlock studyBlock: blocks){
+                if(studyBlock.endTime.isAfter(addedEndTime) && studyBlock.startTime.isBefore(addedEndTime)){
+                    return true;
+                }else if(addedEndTime.isAfter(studyBlock.endTime) && addedStartTime.isBefore(studyBlock.endTime)){
+                    return true;
+                }
+                if(addedStartTime.isEqual(studyBlock.startTime) && addedEndTime.isEqual(studyBlock.endTime)){
+                    return true;
+                }
+
+                if(studyBlock.startTime.isAfter(addedEndTime)){
+                    return false;
+                }
+
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void handleConfirmation() {
         try {
@@ -113,15 +137,24 @@ public class TimeSelectionPanel extends JPanel {
             if (finish <= start) {
                 resultLabel.setText("❌ Finish time must be after start time!");
                 resultLabel.setForeground(Color.RED);
-            } else {
+                return;
+            }
+
+
+            LocalTime addedStartTime = LocalTime.of(sh, sm, ss);
+            LocalTime addedEndTime = LocalTime.of(fh, fm, fs);
+            LocalDateTime addedStartDateTime = LocalDateTime.of(whichDay, addedStartTime);
+            LocalDateTime addedEndDateTime = LocalDateTime.of(whichDay, addedEndTime);
+
+            if(isBlockNotSuitable(addedStartDateTime, addedEndDateTime)){
+                resultLabel.setText("❌ This block intersects with another one!");
+                resultLabel.setForeground(Color.RED);
+            }
+            else{
                 resultLabel.setText(String.format(
                         "✅ Selected range: %02d:%02d:%02d → %02d:%02d:%02d",
                         sh, sm, ss, fh, fm, fs
                 ));
-                LocalTime addedStartTime = LocalTime.of(sh, sm, ss);
-                LocalTime addedEndTime = LocalTime.of(fh, fm, fs);
-                LocalDateTime addedStartDateTime = LocalDateTime.of(whichDay, addedStartTime);
-                LocalDateTime addedEndDateTime = LocalDateTime.of(whichDay, addedEndTime);
                 try {
                     Main.m.addStudyBlock(addedStartDateTime, addedEndDateTime);
                 } catch (SQLException e) {
