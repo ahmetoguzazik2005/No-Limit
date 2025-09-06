@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -109,6 +110,12 @@ public class MyFrame extends JFrame implements ActionListener {
 
         } else if (e.getSource() == button2) {
             cardLayout.show(right, "TodayPanel");
+            try {
+                MyFrame.examinationPanel.prepareEverything(LocalDate.now());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            MyFrame.cardLayout.show(MyFrame.right, "ExaminationPanel");
 
         } else if (e.getSource() == button3) {
             cardLayout.show(right, "TrackPanel");
