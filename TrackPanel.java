@@ -280,7 +280,7 @@ public class TrackPanel extends JPanel implements ActionListener {
             LocalDate date = b.date; // <-- use the actual date
             try {
                 if(Main.m.doesDateExist(date) == false) {
-                    Main.m.addToDay(date, LocalTime.of(0,0,0));
+                    Main.m.addToDay(date);
 
                 }
                 MyFrame.examinationPanel.prepareEverything(date);

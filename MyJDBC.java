@@ -36,7 +36,7 @@ public class MyJDBC {
         String sql = "CREATE TABLE IF NOT EXISTS Days (" +
                 "  day_date DATE PRIMARY KEY," +
                 "  total_time TIME NOT NULL DEFAULT '00:00:00'," +
-                "  goal_time  TIME NOT NULL DEFAULT '00:00:00'" +
+                "  goal_time  TIME NOT NULL DEFAULT '00:01:00'" +
                 ")";
 
         statement.executeUpdate(sql);
@@ -50,30 +50,21 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
-    /*
-     * public void addToDay(LocalDate day, int hours, int minutes, int seconds)
-     * throws SQLException {
-     * String delta = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-     * // Ensure the row exists (so UPDATE always works)
-     * statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" +
-     * day.format(SQL_DATE) + "')"); // create
-     * 
-     * String sql = "UPDATE Days " +
-     * "SET total_time = ADDTIME(total_time, '" + delta + "') " +
-     * "WHERE day_date = '" + day.format(SQL_DATE) + "'";
-     * 
-     * statement.executeUpdate(sql);
-     * 
-     * }
-     */
-    public void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the
-                                                                               // errors
+
+    public void addToDay(LocalDate day, LocalTime time) throws SQLException {
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
 
         String sql = "UPDATE Days " +
                 "SET total_time = ADDTIME(total_time, '" + time.format(SQL_TIME) + "') " +
                 "WHERE day_date = '" + day.format(SQL_DATE) + "'";
+
+        statement.executeUpdate(sql);
+
+    }
+    public void addToDay(LocalDate day) throws SQLException {
+
+        String sql = "Insert into Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')";
 
         statement.executeUpdate(sql);
 

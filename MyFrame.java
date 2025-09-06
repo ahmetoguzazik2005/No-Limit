@@ -109,13 +109,15 @@ public class MyFrame extends JFrame implements ActionListener {
             cardLayout.show(right, "StopwatchPanel");
 
         } else if (e.getSource() == button2) {
-            cardLayout.show(right, "TodayPanel");
             try {
+                if(Main.m.doesDateExist(LocalDate.now()) == false) {
+                    Main.m.addToDay(LocalDate.now());
+                }
                 MyFrame.examinationPanel.prepareEverything(LocalDate.now());
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            MyFrame.cardLayout.show(MyFrame.right, "ExaminationPanel");
+            cardLayout.show(MyFrame.right, "ExaminationPanel");
 
         } else if (e.getSource() == button3) {
             cardLayout.show(right, "TrackPanel");
