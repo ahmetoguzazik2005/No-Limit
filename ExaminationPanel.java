@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ExaminationPanel extends JPanel { // For the detailed day look
+    // Note for us: prepareEverything->set>setProgressBar
 
     // ADD: Professional color constants (same as TrackPanel)
     public static final Color SUCCESS_GREEN = new Color(46, 125, 50);

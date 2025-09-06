@@ -279,6 +279,10 @@ public class TrackPanel extends JPanel implements ActionListener {
             ButtonWithADate b = (ButtonWithADate) src;
             LocalDate date = b.date; // <-- use the actual date
             try {
+                if(Main.m.doesDateExist(date) == false) {
+                    Main.m.addToDay(date, LocalTime.of(0,0,0));
+
+                }
                 MyFrame.examinationPanel.prepareEverything(date);
                 MyFrame.cardLayout.show(MyFrame.right, "ExaminationPanel");
             } catch (SQLException ex) {

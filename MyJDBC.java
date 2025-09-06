@@ -66,7 +66,7 @@ public class MyJDBC {
      * 
      * }
      */
-    private void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the
+    public void addToDay(LocalDate day, LocalTime time) throws SQLException { // Second version for getting rid of the
                                                                                // errors
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
@@ -252,6 +252,23 @@ public class MyJDBC {
 
         statement.executeUpdate(sql);
 
+    }
+    public boolean doesDateExist(LocalDate date) throws SQLException {
+        // Format the LocalDate to SQL DATE format (yyyy-MM-dd)
+        String dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        // Build the SQL query (no prepared statement)
+        String sql = "SELECT EXISTS (SELECT 1 FROM Days WHERE day_date = '" + dateString + "')";
+
+        // Execute the query
+        resultSet = statement.executeQuery(sql);
+
+        // If there's a result, check if it returns 1 (true) or 0 (false)
+        if (resultSet.next()) {
+            return resultSet.getInt(1) == 1;
+        }
+
+        return false; // Default if something unexpected happens
     }
 
 }
