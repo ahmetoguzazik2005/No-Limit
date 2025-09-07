@@ -37,9 +37,9 @@ public class SettingsPanel extends JPanel implements ActionListener, ChangeListe
                 // subtle gradient
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(255, 255, 255),
-                        0, getHeight(), new Color(245, 249, 255));
-                g2.setPaint(gp);
+                // GradientPaint gp = new GradientPaint(0, 0, new Color(255, 255, 255),
+                // 0, getHeight(), new Color(245, 249, 255));
+                g2.setColor(new Color(245, 245, 220)); // makes the background beige
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
                 g2.dispose();
             }
