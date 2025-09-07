@@ -50,7 +50,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
     JTable table;
     public static DefaultTableModel model;
     JScrollPane scrollPane;
-    JProgressBar progressBar;
+    static JProgressBar progressBar;
 
     // NEW: for hover highlight
     private int hoverRow = -1;
@@ -128,8 +128,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         // initial visible part of progressBar
         progressBar = new JProgressBar(0, 100);
-        progressBar.setPreferredSize(new Dimension(450, 60)); // bigger
-        progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
+        progressBar.setPreferredSize(new Dimension(450, 30));
+        progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 14f));
         progressBar.setBackground(Color.WHITE);
         progressBar.setStringPainted(true);
         progressBar.setOpaque(false);
@@ -206,13 +206,16 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         // Progress section (top ~30%)
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        gbc.weighty = 0.30;
+        gbc.weighty = 0.0; // <- no vertical weight
+        gbc.fill = GridBagConstraints.HORIZONTAL; // <- only horizontal
+        gbc.anchor = GridBagConstraints.PAGE_START; // <- stick to top
         centerPanel.add(progressBarPanel, gbc);
 
         // Table section (bottom ~70%)
         gbc.gridy = 1;
         gbc.weighty = 0.70;
         installTableStyle(); // style + behavior
+        gbc.fill = GridBagConstraints.BOTH;
         centerPanel.add(scrollPane, gbc);
 
         // Attach center panel to main layout
@@ -255,6 +258,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
                 model.removeRow(viewRow);
                 try {
                     set();
+                    setProgressBar();
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -355,7 +359,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         table.setToolTipText("Tip: Click a row to select it, then use Delete Block.");
     }
 
-    void setProgressBar() throws SQLException {
+    static void setProgressBar() throws SQLException {
         int totalSeconds = totalTime.toSecondOfDay();
         int goalSeconds = Math.max(1, goalTime.toSecondOfDay()); // avoid /0
         if (totalSeconds >= goalSeconds) {

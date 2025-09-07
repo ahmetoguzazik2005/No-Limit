@@ -185,6 +185,7 @@ public class TimeSelectionPanel extends JPanel {
 
                 try {
                     ExaminationPanel.set();
+                    ExaminationPanel.setProgressBar();
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
