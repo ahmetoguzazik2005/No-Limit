@@ -18,7 +18,7 @@ public class MyJDBC {
     ResultSet resultSet;
 
     MyJDBC() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "password");
+        connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/myDB", "root", "22042005Hid.");
         statement = connection.createStatement();
     }
 
@@ -36,7 +36,7 @@ public class MyJDBC {
         String sql = "CREATE TABLE IF NOT EXISTS Days (" +
                 "  day_date DATE PRIMARY KEY," +
                 "  total_time TIME NOT NULL DEFAULT '00:00:00'," +
-                "  goal_time  TIME NOT NULL DEFAULT '00:01:00'" +
+                "  goal_time  TIME NOT NULL DEFAULT '00:00:00'" +
                 ")";
 
         statement.executeUpdate(sql);
@@ -50,7 +50,6 @@ public class MyJDBC {
         statement.executeUpdate(sql);
     }
 
-
     public void addToDay(LocalDate day, LocalTime time) throws SQLException {
         // Ensure the row exists (so UPDATE always works)
         statement.executeUpdate("INSERT IGNORE INTO Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')"); // create
@@ -62,6 +61,7 @@ public class MyJDBC {
         statement.executeUpdate(sql);
 
     }
+
     public void addToDay(LocalDate day) throws SQLException {
 
         String sql = "Insert into Days (day_date) VALUES ('" + day.format(SQL_DATE) + "')";
@@ -244,6 +244,7 @@ public class MyJDBC {
         statement.executeUpdate(sql);
 
     }
+
     public boolean doesDateExist(LocalDate date) throws SQLException {
         // Format the LocalDate to SQL DATE format (yyyy-MM-dd)
         String dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));

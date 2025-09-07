@@ -126,8 +126,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         cardLayout = new CardLayout();
         progressBarPanel.setLayout(cardLayout);
 
-
-        //initial visible part of progressBar
+        // initial visible part of progressBar
         progressBar = new JProgressBar(0, 100);
         progressBar.setPreferredSize(new Dimension(450, 60)); // bigger
         progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD, 16f)); // larger text
@@ -135,7 +134,6 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         progressBar.setStringPainted(true);
         progressBar.setOpaque(false);
         progressBar.setUI(new RoundedProgressBarUI());
-
 
         addBlockPanel = new TimeSelectionPanel();
         // Adding these to card layout
@@ -162,12 +160,13 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
                 boolean selected = isRowSelected(row);
                 Color even = new Color(252, 252, 252);
-                Color odd  = new Color(245, 247, 250);
+                Color odd = new Color(245, 247, 250);
                 Color hover = new Color(232, 240, 254);
 
                 if (!selected) {
                     c.setBackground((row % 2 == 0) ? even : odd);
-                    if (row == hoverRow) c.setBackground(hover);
+                    if (row == hoverRow)
+                        c.setBackground(hover);
                 }
                 if (c instanceof JComponent jc) {
                     // left/right padding
@@ -265,17 +264,16 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             }
         });
         addBlock.addActionListener(e -> {
-            if(addBlockOn){
+            if (addBlockOn) {
                 addBlockOn = false;
                 cardLayout.show(progressBarPanel, "ProgressBar");
                 addBlock.setText("Add Block");
 
-            }else{
+            } else {
                 addBlockOn = true;
                 cardLayout.show(progressBarPanel, "AddBlockPanel");
                 addBlock.setText("Progress Bar");
             }
-
 
         });
     }
@@ -311,7 +309,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         DefaultTableCellRenderer worked = new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+            public Component getTableCellRendererComponent(JTable t, Object value, boolean isSelected, boolean hasFocus,
+                    int row, int col) {
                 Component c = super.getTableCellRendererComponent(t, value, isSelected, hasFocus, row, col);
                 c.setFont(mono.deriveFont(Font.BOLD));
                 setHorizontalAlignment(SwingConstants.CENTER);
@@ -328,7 +327,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
 
         // Hover tracking (uses panel field hoverRow)
         table.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            @Override public void mouseMoved(java.awt.event.MouseEvent e) {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent e) {
                 int r = table.rowAtPoint(e.getPoint());
                 if (r != -1 && r != hoverRow) {
                     hoverRow = r;
@@ -337,7 +337,8 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             }
         });
         table.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override public void mouseExited(java.awt.event.MouseEvent e) {
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
                 hoverRow = -1;
                 table.repaint();
             }
@@ -346,8 +347,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         // Subtle scrollpane polish
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_GRAY, 1),
-                BorderFactory.createEmptyBorder(0, 0, 0, 0)
-        ));
+                BorderFactory.createEmptyBorder(0, 0, 0, 0)));
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
@@ -367,6 +367,7 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
             progressBar.setValue((int) result);
         }
     }
+
     // Note for us: prepareEverything->set>setProgressBar
     // IMPROVED: Enhanced date preparation
     void prepareEverything(LocalDate whichDay) throws SQLException {
@@ -381,18 +382,16 @@ public class ExaminationPanel extends JPanel { // For the detailed day look
         dateLabelAtTop.setText(formattedDate);
 
         // Color coding for today vs other days
-        if (whichDay.equals(LocalDate.now())) {
-            dateLabelAtTop.setText(formattedDate);
-            dateLabelAtTop.setForeground(SUCCESS_GREEN);
-        } else {
-            dateLabelAtTop.setForeground(ACCENT_BLUE);
-        }
+
+        // getting rid of unnecessary if condiiton
+        dateLabelAtTop.setText(formattedDate);
+        dateLabelAtTop.setForeground(ACCENT_BLUE);
+
     }
 
     public static void set() throws SQLException {
         totalTime = Main.m.getDayTotalTime(whichDay);
         goalTime = Main.m.getDayGoal(whichDay);
-
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String formattedTotalTime = totalTime.format(formatter);

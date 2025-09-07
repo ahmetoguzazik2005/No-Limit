@@ -201,8 +201,12 @@ public class TrackPanel extends JPanel implements ActionListener {
                     LocalDate prevDate = LocalDate.of(prevYear, prevMonth, prevMonthDay);
                     LocalTime totalTime = Main.m.getDayTotalTime(prevDate);
                     LocalTime goalTime = Main.m.getDayGoal(prevDate);
+
                     button.date = prevDate;
-                    if (totalTime == null) {
+                    // checks any change has been done or not if not paint it white
+
+                    if (totalTime == null || goalTime == null
+                            || (totalTime.toString().equals("00:00") && goalTime.toString().equals("00:00"))) {
                         button.setBackground(Color.WHITE);
                         button.setText(String.valueOf(prevMonthDay));
                     } else if (goalTime.isAfter(totalTime)) {
@@ -218,10 +222,12 @@ public class TrackPanel extends JPanel implements ActionListener {
                     // Current month's days
                     LocalDate thisDate = LocalDate.of(year, monthId, currentDay);
                     LocalTime totalTime = Main.m.getDayTotalTime(thisDate);
+
                     LocalTime goalTime = Main.m.getDayGoal(thisDate);
                     button.date = thisDate;
-
-                    if (totalTime == null) {
+                    // checks any change has been done or not if not paint it white
+                    if (totalTime == null || goalTime == null
+                            || (totalTime.toString().equals("00:00") && goalTime.toString().equals("00:00"))) {
                         button.setBackground(Color.WHITE);
                         button.setText(currentDay + "");
                     } else if (goalTime.isAfter(totalTime)) {
@@ -253,8 +259,9 @@ public class TrackPanel extends JPanel implements ActionListener {
                     LocalTime totalTime = Main.m.getDayTotalTime(nextDate);
                     LocalTime goalTime = Main.m.getDayGoal(nextDate);
                     button.date = nextDate;
-
-                    if (totalTime == null) {
+                    // checks any change has been done or not if not paint it white
+                    if (totalTime == null || goalTime == null
+                            || (totalTime.toString().equals("00:00") && goalTime.toString().equals("00:00"))) {
                         button.setBackground(Color.WHITE);
                         button.setText(nextMonthDay + "");
                     } else if (goalTime.isAfter(totalTime)) {
@@ -279,7 +286,7 @@ public class TrackPanel extends JPanel implements ActionListener {
             ButtonWithADate b = (ButtonWithADate) src;
             LocalDate date = b.date; // <-- use the actual date
             try {
-                if(Main.m.doesDateExist(date) == false) {
+                if (Main.m.doesDateExist(date) == false) {
                     Main.m.addToDay(date);
 
                 }
